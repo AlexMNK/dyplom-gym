@@ -3,7 +3,10 @@
 
 #include <QCoreApplication>
 
+#include <QString>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+
+extern int var;
 
 #endif // MAIN_H

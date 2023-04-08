@@ -1,11 +1,7 @@
 #include "main.h"
 
-int main(int argc, char *argv[])
+int main()
 {
-    QCoreApplication a(argc, argv);
-//    return a.exec();
-
-
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
     db.setDatabaseName("Driver={ODBC Driver 17 for SQL Server};server=localhost;database=GymDatabase;trusted_connection=Yes;");
     if(db.open())
@@ -26,6 +22,6 @@ int main(int argc, char *argv[])
                 qDebug() << sqlQ.value(1).toString();
             }
         }
-     qDebug() << "end...";
+       qDebug() << "end..." ;
     }
 }
