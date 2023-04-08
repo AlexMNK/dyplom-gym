@@ -4,9 +4,14 @@
 #include <QCoreApplication>
 
 #include <QString>
-#include <QSqlDatabase>
-#include <QSqlQuery>
 
-extern int var;
+#include "dbtransport.h"
+#include "dbhelper.h"
+
+#include <QTcpServer>
+#include <QTcpSocket>
+
+#include <QThread>
+
 
 #endif // MAIN_H

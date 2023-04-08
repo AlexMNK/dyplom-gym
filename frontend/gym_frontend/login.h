@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 
+#include <QTcpSocket>
+#include <QDebug>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class Login; }
 QT_END_NAMESPACE
