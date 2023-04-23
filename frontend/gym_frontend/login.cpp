@@ -32,6 +32,15 @@ Login::Login(QWidget *parent)
 
 
     qDebug() << "Disconnected from server";
+
+    json ex2 = {
+      {"happy", true},
+      {"pi", 3.141},
+    };
+
+    bool value = ex2["happy"];
+
+    qDebug() << value;
 }
 
 Login::~Login()

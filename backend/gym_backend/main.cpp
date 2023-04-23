@@ -42,8 +42,14 @@ int main()
         socket->waitForBytesWritten();
         qDebug() << "Written data";
 
-        //socket->disconnectFromHost();
-        //socket->waitForDisconnected();
-        // socket;
      }
+
+    json ex3 = {
+      {"happy", true},
+      {"pi", 3.141},
+    };
+
+    float value = ex3["pi"];
+
+    qDebug() << value;
 }

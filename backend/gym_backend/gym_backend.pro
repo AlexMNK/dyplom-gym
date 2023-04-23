@@ -4,6 +4,7 @@ QT += network
 
 CONFIG += c++17 console
 CONFIG -= app_bundle
+INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\json\include
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
