@@ -13,9 +13,34 @@
   <property name="windowTitle">
    <string>Login</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
-  <widget class="QMenuBar" name="menubar"/>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>100</y>
+      <width>80</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Open File</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="img_test">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>90</y>
+      <width>301</width>
+      <height>241</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>label</string>
+    </property>
+   </widget>
+  </widget>
  </widget>
  <resources/>
  <connections/>

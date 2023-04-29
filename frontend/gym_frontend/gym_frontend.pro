@@ -12,10 +12,13 @@ INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\json\include
 
 SOURCES += \
     main.cpp \
-    login.cpp
+    login.cpp \
+    transport/socketconnection.cpp
 
 HEADERS += \
-    login.h
+    login.h \
+    transport/socketconnection.h \
+    utils/QByteArrayConverter.hpp
 
 FORMS += \
     login.ui

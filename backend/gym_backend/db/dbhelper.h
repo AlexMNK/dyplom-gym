@@ -8,10 +8,6 @@ class DBHelper
 public:
     static bool GetNextQueryResultRow(QSqlQuery& query);
     static QVariant GetQueryData(QSqlQuery& query, int columnIndex);
-
-private:
-    DBHelper();
-    ~DBHelper();
 };
 
 #endif // DBHELPER_H

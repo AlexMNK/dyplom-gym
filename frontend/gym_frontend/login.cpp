@@ -1,50 +1,49 @@
 #include "login.h"
 #include "ui_login.h"
 
+#include <QThread>
+
 Login::Login(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Login)
 {
     ui->setupUi(this);
 
-    QTcpSocket socket;
-    socket.connectToHost("localhost", 1234); // Connect to the server on port 1234
+    //QThread::sleep(10);
 
-    if (!socket.waitForConnected()) {
-        qDebug() << "Error: " << socket.errorString();
+    this->socket = new QTcpSocket();
+    this->socket->connectToHost("localhost", 1234); // Connect to the server on port 1234
+
+    if (!this->socket->waitForConnected()) {
+        qDebug() << "Error: " << socket->errorString();
     }
 
     qDebug() << "Connected to server";
-
-    socket.write("Hello, server!");
-    socket.waitForBytesWritten();
-    qDebug() << "Written data";
-
-    socket.waitForReadyRead();
-    QByteArray data = socket.readAll();
-    qDebug() << "Received data from server:" << data;
-
-    socket.disconnectFromHost();
-    if (socket.state() != QAbstractSocket::UnconnectedState)
-    {
-        socket.waitForDisconnected();
-    }
-
-
-    qDebug() << "Disconnected from server";
-
-    json ex2 = {
-      {"happy", true},
-      {"pi", 3.141},
-    };
-
-    bool value = ex2["happy"];
-
-    qDebug() << value;
 }
 
 Login::~Login()
 {
     delete ui;
+}
+
+
+void Login::on_pushButton_clicked()
+{
+    SocketConnection newConnection{*this->socket, 30000};
+
+    auto optionalJson = newConnection.Read();
+
+    if (optionalJson)
+    {
+        json jsonValue(std::move(optionalJson.value()));
+        qDebug() << QString::fromStdString(jsonValue["status"]);
+        qDebug() << QByteConverter::StringToQByte(jsonValue["image"]);
+
+        QPixmap pixmap;
+        bool res = pixmap.loadFromData(QByteArray::fromHex(QByteConverter::StringToQByte(jsonValue["image"])));
+        qDebug() << res;
+
+        ui->img_test->setPixmap(pixmap);
+    }
 }
 

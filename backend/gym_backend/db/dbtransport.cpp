@@ -2,34 +2,35 @@
 
 DBTransport::DBTransport(const QString& dbType, const QString& dbName)
 {
-    dbInstance = new QSqlDatabase(QSqlDatabase::addDatabase(dbType));
-    dbInstance->setDatabaseName(dbName);
+    mDbInstance = new QSqlDatabase(QSqlDatabase::addDatabase(dbType));
+    mDbInstance->setDatabaseName(dbName);
 }
 
 DBTransport::~DBTransport()
 {
-    if (dbInstance != nullptr)
+    if (mDbInstance != nullptr)
     {
-        delete dbInstance;
+        delete mDbInstance;
     }
 }
 
 bool DBTransport::OpenConnection()
 {
-    return dbInstance->open();
+    return mDbInstance->open();
 }
 
 void DBTransport::CloseConnection()
 {
-    dbInstance->close();
+    mDbInstance->close();
 }
 
 std::optional<QSqlQuery> DBTransport::ExecuteQuery(const QString& queryString)
 {
-    QSqlQuery sqlQuery(*dbInstance);
+    QSqlQuery sqlQuery(*mDbInstance);
 
     if (!sqlQuery.exec(queryString))
     {
+       qDebug() << sqlQuery.lastError().text();
        return std::nullopt;
     }
 

@@ -1,12 +1,19 @@
 #ifndef LOGIN_H
 #define LOGIN_H
 
+#include <nlohmann/json.hpp>
+
+#include "transport/socketconnection.h"
+#include "utils/QByteArrayConverter.hpp"
+
 #include <QMainWindow>
 
 #include <QTcpSocket>
 #include <QDebug>
-
-#include <nlohmann/json.hpp>
+#include <QFileDialog>
+#include <QImageReader>
+#include <QImage>
+#include <QBuffer>
 
 using json = nlohmann::json;
 
@@ -22,7 +29,11 @@ public:
     Login(QWidget *parent = nullptr);
     ~Login();
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::Login *ui;
+    QTcpSocket * socket;
 };
 #endif // LOGIN_H

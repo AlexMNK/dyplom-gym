@@ -3,6 +3,7 @@
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QString>
 
 #include <optional>
@@ -19,7 +20,7 @@ public:
     std::optional<QSqlQuery> ExecuteQuery(const QString& queryString);
 
 private:
-    QSqlDatabase* dbInstance;
+    QSqlDatabase* mDbInstance;
 };
 
 #endif // DBTRANSPORT_H

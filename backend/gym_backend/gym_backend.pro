@@ -11,10 +11,11 @@ INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\json\include
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        dbhelper.cpp \
-        dbtransport.cpp \
-        main.cpp \
-        sockettransport.cpp
+        db/dbhelper.cpp \
+        db/dbtransport.cpp \
+        main/main.cpp \
+        server-exc/serverexecutioncontext.cpp \
+        transport/socketconnection.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -22,7 +23,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    dbhelper.h \
-    dbtransport.h \
-    main.h \
-    sockettransport.h
+    db/dbhelper.h \
+    db/dbtransport.h \
+    main/main.h \
+    server-exc/serverexecutioncontext.h \
+    transport/socketconnection.h \
+    utils/QByteArrayConverter.hpp
