@@ -21,9 +21,7 @@ SocketConnection::~SocketConnection()
 
 std::optional<json> SocketConnection::Read()
 {
-    qDebug() << "Going to block";
-   // const bool waitResult = mTcpSocket.waitForReadyRead(mBlockingTimeout);
-    const bool waitResult = true;
+    const bool waitResult = mTcpSocket.waitForReadyRead(mBlockingTimeout);
     qDebug() << waitResult;
 
     if (waitResult)

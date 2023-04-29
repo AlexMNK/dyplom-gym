@@ -5,15 +5,14 @@
 
 #include "transport/socketconnection.h"
 #include "utils/QByteArrayConverter.hpp"
+#include "mainwindow/mainwindow.h"
 
 #include <QMainWindow>
 
 #include <QTcpSocket>
 #include <QDebug>
-#include <QFileDialog>
-#include <QImageReader>
 #include <QImage>
-#include <QBuffer>
+#include <QMessageBox>
 
 using json = nlohmann::json;
 
@@ -29,11 +28,24 @@ public:
     Login(QWidget *parent = nullptr);
     ~Login();
 
+signals:
+    void OpenMainWindow(SocketConnection* connection, int userId);
+
+public slots:
+    void LogOutSlot();
+
 private slots:
     void on_pushButton_clicked();
 
 private:
+
+    bool ConnectToServer(const QString hostname, int port, int operationTimeoutDelay);
+    void CreateMainWindow();
+
+private:
     Ui::Login *ui;
-    QTcpSocket * socket;
+    SocketConnection* mConnection;
+    MainWindow* mMainWindow;
+
 };
 #endif // LOGIN_H

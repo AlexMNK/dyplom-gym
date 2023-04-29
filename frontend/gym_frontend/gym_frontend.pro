@@ -11,17 +11,21 @@ INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\json\include
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    login/loginhelpers.cpp \
     main.cpp \
-    login.cpp \
+    login/login.cpp \
+    mainwindow/mainwindow.cpp \
     transport/socketconnection.cpp
 
 HEADERS += \
-    login.h \
+    login/login.h \
+    mainwindow/mainwindow.h \
     transport/socketconnection.h \
     utils/QByteArrayConverter.hpp
 
 FORMS += \
-    login.ui
+    login/login.ui \
+    mainwindow/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
