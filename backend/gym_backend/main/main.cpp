@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
     DBTransport* transport = new DBTransport("QODBC", "Driver={ODBC Driver 17 for SQL Server};server=localhost;database=GymDatabase;trusted_connection=Yes;");
 
     MainServerThread* serverInstance = new MainServerThread(transport, 1234);
+
     qDebug() << serverInstance->StartServer();
     delete serverInstance;
 }
