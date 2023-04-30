@@ -9,8 +9,10 @@
 #include "server-logic/serverworkerthread.h"
 
 #include "utils/QByteArrayConverter.hpp"
+#include "utils/IniHelper.hpp"
 
 #include <nlohmann/json.hpp>
+
 
 #include <QCoreApplication>
 #include <QString>

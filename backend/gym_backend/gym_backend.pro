@@ -5,6 +5,7 @@ QT += network
 CONFIG += c++17 console
 CONFIG -= app_bundle
 INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\json\include
+INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\mINI\src
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -30,4 +31,5 @@ HEADERS += \
     server-logic/mainserverthread.h \
     server-logic/serverworkerthread.h \
     transport/socketconnection.h \
+    utils/IniHelper.hpp \
     utils/QByteArrayConverter.hpp
