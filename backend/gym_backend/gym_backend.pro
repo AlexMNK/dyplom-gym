@@ -14,7 +14,8 @@ SOURCES += \
         db/dbhelper.cpp \
         db/dbtransport.cpp \
         main/main.cpp \
-        server-exc/serverexecutioncontext.cpp \
+        server-logic/mainserverthread.cpp \
+        server-logic/serverworkerthread.cpp \
         transport/socketconnection.cpp
 
 # Default rules for deployment.
@@ -26,6 +27,7 @@ HEADERS += \
     db/dbhelper.h \
     db/dbtransport.h \
     main/main.h \
-    server-exc/serverexecutioncontext.h \
+    server-logic/mainserverthread.h \
+    server-logic/serverworkerthread.h \
     transport/socketconnection.h \
     utils/QByteArrayConverter.hpp
