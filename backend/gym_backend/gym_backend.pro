@@ -16,6 +16,7 @@ SOURCES += \
         db/dbtransport.cpp \
         main/main.cpp \
         server-logic/mainserverthread.cpp \
+        server-logic/serverhandlers.cpp \
         server-logic/serverworkerthread.cpp \
         transport/socketconnection.cpp
 
@@ -29,6 +30,7 @@ HEADERS += \
     db/dbtransport.h \
     main/main.h \
     server-logic/mainserverthread.h \
+    server-logic/serverhandlers.h \
     server-logic/serverworkerthread.h \
     transport/socketconnection.h \
     utils/IniHelper.hpp \

@@ -1,9 +1,10 @@
 #ifndef SERVERWORKERTHREAD_H
 #define SERVERWORKERTHREAD_H
 
-#include <QString>
 #include "db/dbtransport.h"
 #include "transport/socketconnection.h"
+
+#include <QString>
 
 class ServerWorkerThread: public QObject
 {
@@ -18,8 +19,9 @@ private:
     bool HandleServerMessage();
 
 private:
-    DBTransport* mDBTransport;
+
     SocketConnection* mSocketConnection;
+    DBTransport* mDBTransport;
     json *mCurrentReceivedMessage;
 };
 
