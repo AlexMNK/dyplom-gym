@@ -6,10 +6,10 @@
 #include "transport/socketconnection.h"
 #include "utils/QByteArrayConverter.hpp"
 #include "mainwindow/mainwindow.h"
+#include "client-logic/client.h"
 
 #include <QMainWindow>
 
-#include <QTcpSocket>
 #include <QDebug>
 #include <QImage>
 #include <QMessageBox>
@@ -29,7 +29,7 @@ public:
     ~Login();
 
 signals:
-    void OpenMainWindow(SocketConnection* connection, int userId);
+    void OpenMainWindow(Client* clientInstance, int userId);
 
 public slots:
     void LogOutSlot();
@@ -38,13 +38,11 @@ private slots:
     void on_pushButton_clicked();
 
 private:
-
-    bool ConnectToServer(const QString hostname, int port, int operationTimeoutDelay);
     void CreateMainWindow();
 
 private:
     Ui::Login *ui;
-    SocketConnection* mConnection;
+    Client* mClientInstance;
     MainWindow* mMainWindow;
 
 };

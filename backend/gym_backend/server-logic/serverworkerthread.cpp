@@ -12,9 +12,7 @@ ServerWorkerThread::ServerWorkerThread(DBTransport* mDBTransport, SocketConnecti
 
 bool ServerWorkerThread::WaitServermessage()
 {
-    qDebug() << "Going to block on read";
     auto readResult = mSocketConnection->Read();
-    qDebug() << "Unblocked from read";
 
     if (readResult)
     {
@@ -31,7 +29,7 @@ bool ServerWorkerThread::HandleServerMessage()
 
     json ResultJson;
 
-    if (!HandleMessage(mDBTransport, operation, *mCurrentReceivedMessage, ResultJson))
+    if (!ServerMessageHandler::HandleMessage(mDBTransport, operation, *mCurrentReceivedMessage, ResultJson))
     {
         qDebug() << "Error while handling client message";
         return false;

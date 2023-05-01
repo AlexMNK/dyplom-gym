@@ -6,10 +6,11 @@
 #include "transport/socketconnection.h"
 #include "utils/QByteArrayConverter.hpp"
 #include "mainwindow/mainwindow.h"
+#include "client-logic/client.h"
+#include "messaging-protocol/messagingprotocol.h"
 
 #include <QMainWindow>
 
-#include <QTcpSocket>
 #include <QDebug>
 #include <QImage>
 #include <QMessageBox>
@@ -32,7 +33,7 @@ signals:
     void BackToAuthorization();
 
 public slots:
-    void AuthorizationSuccess(SocketConnection* connection, int userId);
+    void AuthorizationSuccess(Client* clientInstance, int userId);
 
 
 private slots:
@@ -42,7 +43,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    SocketConnection* mConnection;
+    Client* mClientInstance;
     int mUserId;
 };
 

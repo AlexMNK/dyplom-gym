@@ -33,7 +33,7 @@ std::optional<json> SocketConnection::Read()
     return std::nullopt;
 }
 
-bool SocketConnection::Write(const json jsonObject)
+bool SocketConnection::Write(const json& jsonObject)
 {
     mTcpSocket.write(QByteConverter::JsonToQByte(jsonObject));
     return mTcpSocket.waitForBytesWritten(mBlockingTimeout);

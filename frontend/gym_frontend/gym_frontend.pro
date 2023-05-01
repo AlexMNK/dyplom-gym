@@ -11,15 +11,18 @@ INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\json\include
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    login/loginhelpers.cpp \
+    client-logic/client.cpp \
     main.cpp \
     login/login.cpp \
     mainwindow/mainwindow.cpp \
+    messaging-protocol/messagingprotocol.cpp \
     transport/socketconnection.cpp
 
 HEADERS += \
+    client-logic/client.h \
     login/login.h \
     mainwindow/mainwindow.h \
+    messaging-protocol/messagingprotocol.h \
     transport/socketconnection.h \
     utils/QByteArrayConverter.hpp
 

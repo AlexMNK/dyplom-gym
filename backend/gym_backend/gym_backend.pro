@@ -15,6 +15,7 @@ SOURCES += \
         db/dbhelper.cpp \
         db/dbtransport.cpp \
         main/main.cpp \
+        messaging-protocol/messagingprotocol.cpp \
         server-logic/mainserverthread.cpp \
         server-logic/serverhandlers.cpp \
         server-logic/serverworkerthread.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     db/dbhelper.h \
     db/dbtransport.h \
     main/main.h \
+    messaging-protocol/messagingprotocol.h \
     server-logic/mainserverthread.h \
     server-logic/serverhandlers.h \
     server-logic/serverworkerthread.h \

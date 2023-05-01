@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,31 +14,30 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::AuthorizationSuccess(SocketConnection* connection, int userId)
+void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
 {
-    this->mConnection = connection;
+    this->mClientInstance = clientInstance;
+    mClientInstance->SetCurrentWindow(this);
     this->mUserId = userId;
 
-    const json GetUserData =
-    {
-        {"Operation", "GetUserData"},
-        {"UserId", mUserId},
-    };
+    json getUserDataMessage;
+    MessagingProtocol::BuildGetUserData(getUserDataMessage, userId);
 
-    mConnection->Write(GetUserData);
-    const auto Result = mConnection->Read();
+    mClientInstance->SendDataToServer(getUserDataMessage);
 
-    if (Result)
-    {
-        const json userData(std::move(Result.value()));
-        ui->name->setText(QString::fromStdString(userData["name"]));
-        ui->password->setText(QString::fromStdString(userData["password"]));
+    const json serverReply = mClientInstance->ReceiveDataFromServer();
 
-        QPixmap pixmap;
-        bool res = pixmap.loadFromData(QByteArray::fromHex(QByteConverter::StringToQByte(userData["image"])));
-        qDebug() << res;
-        ui->image->setPixmap(pixmap);
-    }
+    QString userName, UserPassword;
+    QByteArray userPicture;
+    MessagingProtocol::AcquireGetUserDataReply(serverReply, userName, UserPassword, userPicture);
+
+    ui->name->setText(userName);
+    ui->password->setText(UserPassword);
+
+    QPixmap pixmap;
+    bool res = pixmap.loadFromData(userPicture);
+    qDebug() << res;
+    ui->image->setPixmap(pixmap);
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -53,15 +53,12 @@ void MainWindow::on_Gay_button_clicked()
         {"Operation", "GAY"},
     };
 
-    mConnection->Write(GayJson);
+    mClientInstance->SendDataToServer(GayJson);
 
-    const auto Result = mConnection->Read();
+    const json serverReply = mClientInstance->ReceiveDataFromServer();
 
-    if (Result)
-    {
-         const json userData(std::move(Result.value()));
-         const QString result = QString::fromStdString(userData["GAY"]);
-         QMessageBox::information(this, "Data", result);
-    }
+    const QString result = QString::fromStdString(serverReply["GAY"]);
+    QMessageBox::information(this, "Data", result);
+
 }
 

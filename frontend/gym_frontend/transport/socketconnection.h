@@ -17,7 +17,7 @@ public:
     ~SocketConnection();
 
     std::optional<json> Read();
-    bool Write(const json jsonObject);
+    bool Write(const json& jsonObject);
 
 private:
     QTcpSocket& mTcpSocket;

@@ -73,7 +73,6 @@ void MainServerThread::RunLoop()
            QFuture<void> future = QtConcurrent::run([=](){worker->StartWorkerThread();});
 
            mWorkerThreads.emplace_back(worker);
-           qDebug() << "After thread creation";
         }
     }
 }

@@ -9,6 +9,10 @@
 
 using json = nlohmann::json;
 
-bool HandleMessage(DBTransport* dbTransport, const QString& operation, const json& userMessage, json& outResultMessage);
+class ServerMessageHandler
+{
+public:
+    static bool HandleMessage(DBTransport* dbTransport, const QString& operation, const json& userMessage, json& outResultMessage);
+};
 
 #endif // SERVERHANDLERS_H
