@@ -62,3 +62,36 @@ void MainWindow::on_Gay_button_clicked()
 
 }
 
+
+void MainWindow::on_update_img_clicked()
+{
+    const QString file_name = QFileDialog::getOpenFileName(this, "Choose image");
+    qDebug() << file_name;
+
+    QImageReader imageReader{file_name};
+    qDebug() << imageReader.canRead();
+
+    QImage image = imageReader.read();
+    if(!image.isNull())
+    {
+        QByteArray byteImage;
+        QBuffer buffer(&byteImage);
+        buffer.open(QIODevice::WriteOnly);
+        image.save(&buffer, "JPEG");
+
+        qDebug() << byteImage;
+
+        json updateImageMessage;
+        MessagingProtocol::BuildUpdateImage(updateImageMessage, mUserId, byteImage);
+
+        mClientInstance->SendDataToServer(updateImageMessage);
+
+        const json serverReply = mClientInstance->ReceiveDataFromServer();
+
+        bool Result = false;
+        MessagingProtocol::AcquireUpdateImageReply(serverReply, Result);
+
+        qDebug() << "Server answered " << Result;
+    }
+}
+

@@ -9,12 +9,14 @@ typedef bool (*Handler)(DBTransport* dbTransport, const json&, json&);
 
 static bool HandleGayOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetUserDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleUpdateUserImageOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 
 static std::map<QString, Handler> operationPointers =
 {
     {"GAY", &HandleGayOperation},
     {"GetUserData", &HandleGetUserDataOperation},
+    {"UpdateUserImage", &HandleUpdateUserImageOperation},
 };
 
 
@@ -38,38 +40,64 @@ bool HandleGayOperation(DBTransport* dbTransport, const json& userMessage, json&
 
 bool HandleGetUserDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
 {
-    int id;
-    MessagingProtocol::AcquireGetUserData(userMessage, id);
+    int userId;
+    MessagingProtocol::AcquireGetUserData(userMessage, userId);
 
-    auto optionalQuery = dbTransport->ExecuteQuery("SELECT user_name, user_password, user_profile_picture FROM Users WHERE id = " + QString::number(id));
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT user_name, user_password, user_profile_picture FROM Users WHERE id = " + QString::number(userId));
     if (optionalQuery)
     {
         QSqlQuery query(std::move(optionalQuery.value()));
 
         if (DBHelper::GetNextQueryResultRow(query))
         {
-            QString user_name = DBHelper::GetQueryData(query, 0).toString();
-            QString user_password = DBHelper::GetQueryData(query, 1).toString();
-            int user_picture = DBHelper::GetQueryData(query, 2).toInt();
+            QString userName = DBHelper::GetQueryData(query, 0).toString();
+            QString userPassword = DBHelper::GetQueryData(query, 1).toString();
+            int userPictureId = DBHelper::GetQueryData(query, 2).toInt();
 
-            auto optionalQuery2 = dbTransport->ExecuteQuery("SELECT image from Images WHERE id = " + QString::number(user_picture));
+            auto optionalQuery2 = dbTransport->ExecuteQuery("SELECT image from Images WHERE id = " + QString::number(userPictureId));
             if (optionalQuery2)
             {
                 QSqlQuery query2(std::move(optionalQuery2.value()));
-                QByteArray user_image;
+                QByteArray userImage;
 
                 if (DBHelper::GetNextQueryResultRow(query2))
                 {
-                    user_image = DBHelper::GetQueryData(query2, 0).toByteArray();
+                    userImage = DBHelper::GetQueryData(query2, 0).toByteArray();
                 }
 
-                MessagingProtocol::BuildReplyGetUserData(outResultMessage, user_name, user_password, user_image);
+                MessagingProtocol::BuildReplyGetUserData(outResultMessage, userName, userPassword, userImage);
 
                 return true;
             }
         }
     }
 
+    return false;
+}
+
+bool HandleUpdateUserImageOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId;
+    QByteArray imageData;
+    MessagingProtocol::AcquireUpdateImage(userMessage, userId, imageData);
+
+    qDebug() << imageData;
+
+    auto optionalQuery = dbTransport->ExecuteQuery("Declare @IMAGE_ID int "
+                                                   "INSERT INTO Images "
+                                                   "VALUES (CONVERT(varbinary(MAX), '" + QString(imageData) +"')) "
+                                                   "SET @IMAGE_ID = SCOPE_IDENTITY() "
+                                                   "UPDATE Users "
+                                                   "SET user_profile_picture = @IMAGE_ID "
+                                                   "WHERE id = " + QString::number(userId));
+    if (optionalQuery)
+    {
+        MessagingProtocol::BuildReplyUpdateImage(outResultMessage, true);
+        return true;
+    }
+
+    qDebug() << "False query result";
+    MessagingProtocol::BuildReplyUpdateImage(outResultMessage, false);
     return false;
 }
 

@@ -79,6 +79,19 @@
      <string>GAY</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="update_img">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>440</y>
+      <width>80</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Update Image</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

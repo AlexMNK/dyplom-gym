@@ -12,10 +12,14 @@ ServerWorkerThread::ServerWorkerThread(DBTransport* mDBTransport, SocketConnecti
 
 bool ServerWorkerThread::WaitServermessage()
 {
+    qDebug() << "Going to block on read";
     auto readResult = mSocketConnection->Read();
+
+    qDebug() << "Unblocked from read";
 
     if (readResult)
     {
+        qDebug() << "Fine result";
         mCurrentReceivedMessage = new json(readResult.value());
         return true;
     }

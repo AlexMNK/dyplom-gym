@@ -14,6 +14,9 @@
 #include <QDebug>
 #include <QImage>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QImageReader>
+#include <QBuffer>
 
 using json = nlohmann::json;
 
@@ -40,6 +43,8 @@ private slots:
     void on_pushButton_clicked();
 
     void on_Gay_button_clicked();
+
+    void on_update_img_clicked();
 
 private:
     Ui::MainWindow *ui;
