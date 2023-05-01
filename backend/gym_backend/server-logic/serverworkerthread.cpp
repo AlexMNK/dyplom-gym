@@ -14,13 +14,13 @@ bool ServerWorkerThread::WaitServermessage()
 {
     qDebug() << "Going to block on read";
     auto readResult = mSocketConnection->Read();
-
     qDebug() << "Unblocked from read";
 
     if (readResult)
     {
         qDebug() << "Fine result";
         mCurrentReceivedMessage = new json(readResult.value());
+        qDebug() << "CurrentOperation" << QString::fromStdString((*mCurrentReceivedMessage)["Operation"]);
         return true;
     }
 
@@ -33,12 +33,13 @@ bool ServerWorkerThread::HandleServerMessage()
 
     json ResultJson;
 
-    if (!ServerMessageHandler::HandleMessage(mDBTransport, operation, *mCurrentReceivedMessage, ResultJson))
+    if (!ServerMessageHandler::HandleMessage(mSocketConnection, mDBTransport, operation, *mCurrentReceivedMessage, ResultJson))
     {
         qDebug() << "Error while handling client message";
         return false;
     }
 
+    qDebug() << "Got out of handler";
     return !ResultJson.empty() ? mSocketConnection->Write(ResultJson) : false;
 }
 

@@ -2,31 +2,45 @@
 
 #include "db/dbhelper.h"
 #include "messaging-protocol/messagingprotocol.h"
+#include "utils/DataPartImageHelper.hpp"
 
 #include <QDebug>
 
 typedef bool (*Handler)(DBTransport* dbTransport, const json&, json&);
+typedef bool (*DataPartHandler)(SocketConnection* socketConnection, DBTransport* dbTransport, const json&, json&);
+
+// Message Handlers
 
 static bool HandleGayOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
-static bool HandleGetUserDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
-static bool HandleUpdateUserImageOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
-
-static std::map<QString, Handler> operationPointers =
+static std::map<QString, Handler> messageHandlers =
 {
     {"GAY", &HandleGayOperation},
+};
+
+// Data part handlers
+
+static bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleUpdateUserImageOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+
+static std::map<QString, DataPartHandler> dataPartHandlers =
+{
     {"GetUserData", &HandleGetUserDataOperation},
     {"UpdateUserImage", &HandleUpdateUserImageOperation},
 };
 
-
-bool ServerMessageHandler::HandleMessage(DBTransport* dbTransport, const QString& operation, const json& userMessage, json& outResultMessage)
+bool ServerMessageHandler::HandleMessage(SocketConnection* socketConnection, DBTransport* dbTransport, const QString& operation, const json& userMessage, json& outResultMessage)
 {
-    return operationPointers[operation](dbTransport, userMessage, outResultMessage);
+    if (!messageHandlers[operation])
+    {
+        return dataPartHandlers[operation](socketConnection, dbTransport, userMessage, outResultMessage);
+    }
+
+    return messageHandlers[operation](dbTransport, userMessage, outResultMessage);
 }
 
 
-// -------------------------------------------- ALL HANDLERS ---------------------------------------------------//
+// -------------------------------------------- MESSAGE HANDLERS ---------------------------------------------------//
 
 bool HandleGayOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
 {
@@ -38,7 +52,9 @@ bool HandleGayOperation(DBTransport* dbTransport, const json& userMessage, json&
     return true;
 }
 
-bool HandleGetUserDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+// -------------------------------------------- DATA PART HANDLERS ---------------------------------------------------//
+
+bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
 {
     int userId;
     MessagingProtocol::AcquireGetUserData(userMessage, userId);
@@ -54,6 +70,11 @@ bool HandleGetUserDataOperation(DBTransport* dbTransport, const json& userMessag
             QString userPassword = DBHelper::GetQueryData(query, 1).toString();
             int userPictureId = DBHelper::GetQueryData(query, 2).toInt();
 
+            qDebug() << "Got here 1";
+            qDebug() << userName;
+            qDebug() << userPassword;
+            qDebug() << userPictureId;
+
             auto optionalQuery2 = dbTransport->ExecuteQuery("SELECT image from Images WHERE id = " + QString::number(userPictureId));
             if (optionalQuery2)
             {
@@ -62,10 +83,16 @@ bool HandleGetUserDataOperation(DBTransport* dbTransport, const json& userMessag
 
                 if (DBHelper::GetNextQueryResultRow(query2))
                 {
-                    userImage = DBHelper::GetQueryData(query2, 0).toByteArray();
+                    userImage = DBHelper::GetQueryData(query2, 0).toByteArray(); 
                 }
 
-                MessagingProtocol::BuildReplyGetUserData(outResultMessage, userName, userPassword, userImage);
+                json imageSize;
+                MessagingProtocol::BuildImageSize(imageSize, userImage.size());
+                socketConnection->Write(imageSize);
+
+                DataPartImageHelper::SendImageByParts(socketConnection, userImage);
+
+                MessagingProtocol::BuildReplyGetUserData(outResultMessage, userName, userPassword);
 
                 return true;
             }
@@ -75,17 +102,26 @@ bool HandleGetUserDataOperation(DBTransport* dbTransport, const json& userMessag
     return false;
 }
 
-bool HandleUpdateUserImageOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+bool HandleUpdateUserImageOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
 {
-    int userId;
-    QByteArray imageData;
-    MessagingProtocol::AcquireUpdateImage(userMessage, userId, imageData);
+    json test =
+    {
+        {"GAY2", "2281337"},
+    };
+    socketConnection->Write(test);
+
+    int userId, imageSize;
+    MessagingProtocol::AcquireUpdateImage(userMessage, userId, imageSize);
+    qDebug() << "Got into handler to update user image";
+    qDebug() << "userId " << userId << "imageSize " << imageSize;
+
+    QByteArray imageData = DataPartImageHelper::ReceiveImageByParts(socketConnection, imageSize);
 
     qDebug() << imageData;
 
     auto optionalQuery = dbTransport->ExecuteQuery("Declare @IMAGE_ID int "
                                                    "INSERT INTO Images "
-                                                   "VALUES (CONVERT(varbinary(MAX), '" + QString(imageData) +"')) "
+                                                   "VALUES (CONVERT(varbinary(MAX), '" + QString(imageData.toHex()) +"')) "
                                                    "SET @IMAGE_ID = SCOPE_IDENTITY() "
                                                    "UPDATE Users "
                                                    "SET user_profile_picture = @IMAGE_ID "

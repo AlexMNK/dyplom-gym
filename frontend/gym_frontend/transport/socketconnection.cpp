@@ -22,11 +22,11 @@ SocketConnection::~SocketConnection()
 std::optional<json> SocketConnection::Read()
 {
     const bool waitResult = mTcpSocket.waitForReadyRead(mBlockingTimeout);
-    qDebug() << waitResult;
 
     if (waitResult)
     {
         QByteArray readData = mTcpSocket.readAll();
+        qDebug() << "read size: " << readData.size();
         return QByteConverter::QByteToJson(readData);
     }
 
@@ -36,6 +36,18 @@ std::optional<json> SocketConnection::Read()
 bool SocketConnection::Write(const json& jsonObject)
 {
     mTcpSocket.write(QByteConverter::JsonToQByte(jsonObject));
+    return mTcpSocket.waitForBytesWritten(mBlockingTimeout);
+}
+
+QByteArray SocketConnection::ReadRaw()
+{
+   mTcpSocket.waitForReadyRead(mBlockingTimeout);
+   return mTcpSocket.readAll();
+}
+
+bool SocketConnection::WriteRaw(const QByteArray& byteArray)
+{
+    mTcpSocket.write(byteArray);
     return mTcpSocket.waitForBytesWritten(mBlockingTimeout);
 }
 

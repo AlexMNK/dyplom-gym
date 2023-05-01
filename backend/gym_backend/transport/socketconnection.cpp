@@ -38,5 +38,17 @@ bool SocketConnection::Write(const json& jsonObject)
     return mTcpSocket.waitForBytesWritten(mBlockingTimeout);
 }
 
+QByteArray SocketConnection::ReadRaw()
+{
+   mTcpSocket.waitForReadyRead(mBlockingTimeout);
+   return mTcpSocket.readAll();
+}
+
+bool SocketConnection::WriteRaw(const QByteArray& byteArray)
+{
+    mTcpSocket.write(byteArray);
+    return mTcpSocket.waitForBytesWritten(mBlockingTimeout);
+}
+
 
 

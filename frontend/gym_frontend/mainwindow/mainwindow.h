@@ -5,6 +5,7 @@
 
 #include "transport/socketconnection.h"
 #include "utils/QByteArrayConverter.hpp"
+#include "utils/DataPartImageHelper.hpp"
 #include "mainwindow/mainwindow.h"
 #include "client-logic/client.h"
 #include "messaging-protocol/messagingprotocol.h"

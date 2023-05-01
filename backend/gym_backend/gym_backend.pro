@@ -35,5 +35,6 @@ HEADERS += \
     server-logic/serverhandlers.h \
     server-logic/serverworkerthread.h \
     transport/socketconnection.h \
+    utils/DataPartImageHelper.hpp \
     utils/IniHelper.hpp \
     utils/QByteArrayConverter.hpp

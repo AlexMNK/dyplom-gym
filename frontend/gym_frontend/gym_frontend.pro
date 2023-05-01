@@ -24,6 +24,7 @@ HEADERS += \
     mainwindow/mainwindow.h \
     messaging-protocol/messagingprotocol.h \
     transport/socketconnection.h \
+    utils/DataPartImageHelper.hpp \
     utils/QByteArrayConverter.hpp
 
 FORMS += \

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMessageBox>
+#include <QThread>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -16,6 +17,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
 {
+    int imageSize = 0;
+    QString userName, UserPassword;
+    QByteArray userPicture;
+
     this->mClientInstance = clientInstance;
     mClientInstance->SetCurrentWindow(this);
     this->mUserId = userId;
@@ -23,21 +28,28 @@ void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
     json getUserDataMessage;
     MessagingProtocol::BuildGetUserData(getUserDataMessage, userId);
 
-    mClientInstance->SendDataToServer(getUserDataMessage);
+    mClientInstance->SendDataToServer(getUserDataMessage); // send user id
 
-    const json serverReply = mClientInstance->ReceiveDataFromServer();
+    const json serverImageSize = mClientInstance->ReceiveDataFromServer(); // rcv image size
 
-    QString userName, UserPassword;
-    QByteArray userPicture;
-    MessagingProtocol::AcquireGetUserDataReply(serverReply, userName, UserPassword, userPicture);
+    MessagingProtocol::AcquireImageSize(serverImageSize, imageSize);
+
+    qDebug() << "Image Size";
+    qDebug() << imageSize;
+
+    userPicture = DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize); // rcv image by parts
+
+    QPixmap pixmap;
+    bool res = pixmap.loadFromData(QByteArray::fromHex(userPicture));
+    qDebug() << res;
+    ui->image->setPixmap(pixmap);
+
+    const json serverReply = mClientInstance->ReceiveDataFromServer(); // rcv user name and password
+
+    MessagingProtocol::AcquireGetUserDataReply(serverReply, userName, UserPassword);
 
     ui->name->setText(userName);
     ui->password->setText(UserPassword);
-
-    QPixmap pixmap;
-    bool res = pixmap.loadFromData(userPicture);
-    qDebug() << res;
-    ui->image->setPixmap(pixmap);
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -72,6 +84,7 @@ void MainWindow::on_update_img_clicked()
     qDebug() << imageReader.canRead();
 
     QImage image = imageReader.read();
+
     if(!image.isNull())
     {
         QByteArray byteImage;
@@ -81,17 +94,21 @@ void MainWindow::on_update_img_clicked()
 
         qDebug() << byteImage.size();
 
-//        if (byteImage.size() > 30000)   IT WORKS!
-//        {
-//            byteImage = byteImage.sliced(0, 30000);
-//        }
+        int imageSize = byteImage.size();
 
         json updateImageMessage;
-        MessagingProtocol::BuildUpdateImage(updateImageMessage, mUserId, byteImage);
+        MessagingProtocol::BuildUpdateImage(updateImageMessage, mUserId, imageSize);
 
-        mClientInstance->SendDataToServer(updateImageMessage);
+        mClientInstance->SendDataToServer(updateImageMessage); // send image info
 
-        const json serverReply = mClientInstance->ReceiveDataFromServer();
+        const json serverReply2 = mClientInstance->ReceiveDataFromServer();
+
+        const QString result = QString::fromStdString(serverReply2["GAY2"]);
+        QMessageBox::information(this, "Data", result);
+
+        DataPartImageHelper::SendImageByParts(mClientInstance->GetSocketConnection(), byteImage); // send img by parts
+
+        const json serverReply = mClientInstance->ReceiveDataFromServer(); // receive status
 
         bool Result = false;
         MessagingProtocol::AcquireUpdateImageReply(serverReply, Result);

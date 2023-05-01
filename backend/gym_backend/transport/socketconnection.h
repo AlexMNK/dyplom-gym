@@ -19,6 +19,9 @@ public:
     std::optional<json> Read();
     bool Write(const json& jsonObject);
 
+    QByteArray ReadRaw();
+    bool WriteRaw(const QByteArray& byteArray);
+
 private:
     QTcpSocket& mTcpSocket;
     int mBlockingTimeout;
