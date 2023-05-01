@@ -79,7 +79,12 @@ void MainWindow::on_update_img_clicked()
         buffer.open(QIODevice::WriteOnly);
         image.save(&buffer, "JPEG");
 
-        qDebug() << byteImage;
+        qDebug() << byteImage.size();
+
+//        if (byteImage.size() > 30000)   IT WORKS!
+//        {
+//            byteImage = byteImage.sliced(0, 30000);
+//        }
 
         json updateImageMessage;
         MessagingProtocol::BuildUpdateImage(updateImageMessage, mUserId, byteImage);
