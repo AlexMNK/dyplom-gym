@@ -3,24 +3,24 @@
 
 #include <QDebug>
 
-// Image size
-
-void MessagingProtocol::AcquireImageSize(const json& message, int& outImageSize)
-{
-    outImageSize = message["ImageSize"];
-}
-
-void MessagingProtocol::BuildImageSize(json& outMessage, const int size)
+//
+void MessagingProtocol::BuildAuthorize(json& outMessage, const QString& userLogin, const QString& userPassword)
 {
     outMessage =
     {
-        {"ImageSize", size},
+        {"Operation", "Authorize"},
+        {"UserLogin", userLogin.toStdString()},
+        {"UserPassword", userPassword.toStdString()},
     };
 }
 
+void MessagingProtocol::AcquireAuthorizeReply(const json& message, int& outUserId, QString& outStatus)
+{
+    outUserId = message["UserId"];
+    outStatus = QString::fromStdString(message["Status"]);
+}
 
-// All other messages
-
+//
 void MessagingProtocol::BuildGetUserData(json& outMessage, int userId)
 {
     outMessage =
@@ -36,7 +36,7 @@ void MessagingProtocol::AcquireGetUserDataReply(const json& message, QString& ou
     outUserPassword = QString::fromStdString(message["Password"]);
 }
 
-
+//
 void MessagingProtocol::BuildUpdateImage(json& outMessage, int userId, int imageSize)
 {
     outMessage =
@@ -50,4 +50,18 @@ void MessagingProtocol::BuildUpdateImage(json& outMessage, int userId, int image
 void MessagingProtocol::AcquireUpdateImageReply(const json& message, bool& outResult)
 {
     outResult = message["Result"];
+}
+
+//
+void MessagingProtocol::BuildImageSize(json& outMessage, const int size)
+{
+    outMessage =
+    {
+        {"ImageSize", size},
+    };
+}
+
+void MessagingProtocol::AcquireImageSize(const json& message, int& outImageSize)
+{
+    outImageSize = message["ImageSize"];
 }

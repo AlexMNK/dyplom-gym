@@ -12,6 +12,7 @@ INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\json\include
 
 SOURCES += \
     client-logic/client.cpp \
+    login/loginoperations.cpp \
     main.cpp \
     login/login.cpp \
     mainwindow/mainwindow.cpp \

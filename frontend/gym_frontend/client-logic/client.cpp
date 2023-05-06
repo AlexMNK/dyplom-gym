@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QMessageBox>
 
-static constexpr int MAX_CLIENT_BLOCKING_PERIOD = 10000; // 10 sec max for server responce
+static constexpr int MAX_CLIENT_BLOCKING_PERIOD = 3000; // 3 sec max for server responce
 
 Client::~Client()
 {

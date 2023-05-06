@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>100</y>
+      <x>330</x>
+      <y>300</y>
       <width>121</width>
       <height>24</height>
      </rect>
@@ -27,17 +27,82 @@
      <string>Go MainWIndow</string>
     </property>
    </widget>
-   <widget class="QLabel" name="img_test">
+   <widget class="QLineEdit" name="user_name">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>270</x>
+      <y>120</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
       <y>100</y>
-      <width>301</width>
-      <height>241</height>
+      <width>151</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>label</string>
+     <string>Enter user email or hashtag:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="user_password">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>190</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>170</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enter user password:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="no_user_found">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>130</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: red</string>
+    </property>
+    <property name="text">
+     <string>No user found!</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="invalid_password">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>200</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: red</string>
+    </property>
+    <property name="text">
+     <string>Wrong password!</string>
     </property>
    </widget>
   </widget>

@@ -11,9 +11,9 @@ using json = nlohmann::json;
 class MessagingProtocol
 {
 public:
-    // Image size
-    static void AcquireImageSize(const json& message, int& outImageSize);
-    static void BuildImageSize(json& outMessage, const int size);
+    // Get user id by user email or hash and password
+    static void BuildAuthorize(json& outMessage, const QString& userLogin, const QString& userPassword);
+    static void AcquireAuthorizeReply(const json& message, int& outUserId, QString& outStatus);
 
     // Get user data by Id
     static void BuildGetUserData(json& outMessage, int userId);
@@ -23,6 +23,9 @@ public:
     static void BuildUpdateImage(json& outMessage, int userId, int imageSize);
     static void AcquireUpdateImageReply(const json& message, bool& outResult);
 
+    // Image size
+    static void BuildImageSize(json& outMessage, const int size);
+    static void AcquireImageSize(const json& message, int& outImageSize);
 
 };
 

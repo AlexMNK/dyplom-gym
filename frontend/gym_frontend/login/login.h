@@ -39,11 +39,16 @@ private slots:
 
 private:
     void CreateMainWindow();
+    void HideAllErrorLabels();
+
+private: // user operations
+    void PerformAuthorizeOperation(int& outUserId);
 
 private:
     Ui::Login *ui;
     Client* mClientInstance;
     MainWindow* mMainWindow;
+    bool mIsMainWindowCreated{false};
 
 };
 #endif // LOGIN_H

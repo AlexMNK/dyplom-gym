@@ -14,6 +14,8 @@ Login::Login(QWidget *parent)
         QMessageBox::critical(this, "Error", "Failed to connect to a server, try again later");
         exit(1);
     }
+
+    HideAllErrorLabels();
 }
 
 Login::~Login()
@@ -23,11 +25,21 @@ Login::~Login()
     delete mMainWindow;
 }
 
+void Login::HideAllErrorLabels()
+{
+    ui->no_user_found->hide();
+    ui->invalid_password->hide();
+}
+
 void Login::CreateMainWindow()
 {
-    this->mMainWindow = new MainWindow();
-    connect(this, &Login::OpenMainWindow, mMainWindow, &MainWindow::AuthorizationSuccess);
-    connect(mMainWindow, SIGNAL(BackToAuthorization()), this, SLOT(LogOutSlot()));
+    if (!mIsMainWindowCreated)
+    {
+        this->mMainWindow = new MainWindow();
+        connect(this, &Login::OpenMainWindow, mMainWindow, &MainWindow::AuthorizationSuccess);
+        connect(mMainWindow, SIGNAL(BackToAuthorization()), this, SLOT(LogOutSlot()));
+        mIsMainWindowCreated = true;
+    }
 }
 
 void Login::LogOutSlot()
@@ -40,11 +52,15 @@ void Login::LogOutSlot()
 
 void Login::on_pushButton_clicked()
 {
-    CreateMainWindow();
+    int userId = 0;
+    PerformAuthorizeOperation(userId);
 
-    emit OpenMainWindow(mClientInstance, 1);
-
-    this->hide();
-    mMainWindow->show();
+    if (userId != 0)
+    {
+        CreateMainWindow();
+        emit OpenMainWindow(mClientInstance, userId);
+        this->hide();
+        mMainWindow->show();
+    }
 }
 
