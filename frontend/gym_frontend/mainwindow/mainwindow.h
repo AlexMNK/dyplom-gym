@@ -42,10 +42,12 @@ public slots:
 
 private slots:
     void on_pushButton_clicked();
-
     void on_Gay_button_clicked();
-
     void on_update_img_clicked();
+
+private: // user operations
+    void PerformGetUserDataOperation();
+    void PerformUpdateUserImageOperation();
 
 private:
     Ui::MainWindow *ui;

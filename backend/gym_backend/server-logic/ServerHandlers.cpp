@@ -104,11 +104,11 @@ bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport*
 
 bool HandleUpdateUserImageOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
 {
-    json test =
+    json status =
     {
-        {"GAY2", "2281337"},
+        {"Status", "OK"},
     };
-    socketConnection->Write(test);
+    socketConnection->Write(status);
 
     int userId, imageSize;
     MessagingProtocol::AcquireUpdateImage(userMessage, userId, imageSize);

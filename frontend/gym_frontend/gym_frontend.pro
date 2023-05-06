@@ -15,6 +15,7 @@ SOURCES += \
     main.cpp \
     login/login.cpp \
     mainwindow/mainwindow.cpp \
+    mainwindow/mainwindowoperations.cpp \
     messaging-protocol/messagingprotocol.cpp \
     transport/socketconnection.cpp
 
