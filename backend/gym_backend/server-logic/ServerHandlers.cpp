@@ -24,11 +24,13 @@ static std::map<QString, Handler> messageHandlers =
 
 static bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleUpdateUserImageOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleGetUserFriendsOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, DataPartHandler> dataPartHandlers =
 {
     {"GetUserData", &HandleGetUserDataOperation},
     {"UpdateUserImage", &HandleUpdateUserImageOperation},
+    {"GetUserFriends", &HandleGetUserFriendsOperation}
 };
 
 bool ServerMessageHandler::HandleMessage(SocketConnection* socketConnection, DBTransport* dbTransport, const QString& operation, const json& userMessage, json& outResultMessage)
@@ -134,16 +136,25 @@ bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport*
     int userId;
     MessagingProtocol::AcquireGetUserData(userMessage, userId);
 
-    auto optionalQuery = dbTransport->ExecuteQuery("SELECT user_name, user_password, user_profile_picture FROM Users WHERE id = " + QString::number(userId));
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT * FROM Users WHERE id = " + QString::number(userId));
     if (optionalQuery)
     {
         QSqlQuery query(std::move(optionalQuery.value()));
 
         if (DBHelper::GetNextQueryResultRow(query))
         {
-            QString userName = DBHelper::GetQueryData(query, 0).toString();
-            QString userPassword = DBHelper::GetQueryData(query, 1).toString();
-            int userPictureId = DBHelper::GetQueryData(query, 2).toInt();
+            QString userName = DBHelper::GetQueryData(query, 1).toString();
+            QString userEmail = DBHelper::GetQueryData(query, 2).toString();
+            QString userPassword = DBHelper::GetQueryData(query, 3).toString();
+            int userHashId = DBHelper::GetQueryData(query, 4).toInt();
+            int userPictureId = DBHelper::GetQueryData(query, 5).toInt();
+            float userBenchMax = DBHelper::GetQueryData(query, 6).toFloat();
+            float userSquatMax = DBHelper::GetQueryData(query, 7).toFloat();
+            float userDeadliftMax = DBHelper::GetQueryData(query, 8).toFloat();
+            int userHeight = DBHelper::GetQueryData(query, 9).toInt();
+            float userWeight = DBHelper::GetQueryData(query, 10).toFloat();
+            int userAge = DBHelper::GetQueryData(query, 11).toInt();
+            int userPoints = DBHelper::GetQueryData(query, 12).toInt();
 
             auto optionalQuery2 = dbTransport->ExecuteQuery("SELECT image from Images WHERE id = " + QString::number(userPictureId));
             if (optionalQuery2)
@@ -153,7 +164,7 @@ bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport*
 
                 if (DBHelper::GetNextQueryResultRow(query2))
                 {
-                    userImage = DBHelper::GetQueryData(query2, 0).toByteArray(); 
+                    userImage = DBHelper::GetQueryData(query2, 0).toByteArray();
                 }
 
                 json imageSize;
@@ -162,11 +173,49 @@ bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport*
 
                 DataPartImageHelper::SendImageByParts(socketConnection, userImage);
 
-                MessagingProtocol::BuildGetUserDataReply(outResultMessage, userName, userPassword);
+                auto optionalQuery3 = dbTransport->ExecuteQuery("SELECT hashtag FROM User_Hashtags WHERE id = " + QString::number(userHashId));
+                if (optionalQuery3)
+                {
+                    QSqlQuery query3(std::move(optionalQuery3.value()));
+                    QString userHashtag;
 
-                return true;
+                    if (DBHelper::GetNextQueryResultRow(query3))
+                    {
+                        userHashtag = DBHelper::GetQueryData(query3, 0).toString();
+                    }
+
+                    MessagingProtocol::BuildGetUserDataReply(outResultMessage, userName, userPassword, userHashtag, userEmail, userBenchMax, userSquatMax, userDeadliftMax,
+                                                                 userHeight, userWeight, userAge, userPoints);
+
+                    return true;
+                }
             }
         }
+    }
+
+    return false;
+}
+
+bool HandleGetUserFriendsOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId;
+    std::vector<int> friendIds;
+    MessagingProtocol::AcquireGetUserFriends(userMessage, userId);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT responder_user_id FROM Friendships WHERE requester_user_id = " + QString::number(userId) + " AND STATUS = 2 "
+                                                   "UNION SELECT requester_user_id FROM Friendships WHERE responder_user_id = " + QString::number(userId) + " AND STATUS = 2");
+    if (optionalQuery)
+    {
+        QSqlQuery query(std::move(optionalQuery.value()));
+
+        while (DBHelper::GetNextQueryResultRow(query))
+        {
+            friendIds.push_back(DBHelper::GetQueryData(query, 0).toInt());
+        }
+
+        MessagingProtocol::BuildGetUserFriendsReply(outResultMessage, friendIds);
+
+        return true;
     }
 
     return false;

@@ -9,6 +9,8 @@
 #include "mainwindow/mainwindow.h"
 #include "client-logic/client.h"
 #include "messaging-protocol/messagingprotocol.h"
+#include "models/mainuser.h"
+#include "models/frienduser.h"
 
 #include <QMainWindow>
 
@@ -45,14 +47,18 @@ private slots:
     void on_Gay_button_clicked();
     void on_update_img_clicked();
 
+private:
+    void StartChatRunnerThread();
+
 private: // user operations
     void PerformGetUserDataOperation();
     void PerformUpdateUserImageOperation();
+    void PerformGetUserFriendsOperation();
 
 private:
     Ui::MainWindow *ui;
     Client* mClientInstance;
-    int mUserId;
+    MainUser* mCurrentUser;
 };
 
 #endif // MAINWINDOW_H

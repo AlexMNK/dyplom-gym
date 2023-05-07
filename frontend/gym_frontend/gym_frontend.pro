@@ -18,6 +18,8 @@ SOURCES += \
     mainwindow/mainwindow.cpp \
     mainwindow/mainwindowoperations.cpp \
     messaging-protocol/messagingprotocol.cpp \
+    models/frienduser.cpp \
+    models/mainuser.cpp \
     transport/socketconnection.cpp
 
 HEADERS += \
@@ -25,6 +27,9 @@ HEADERS += \
     login/login.h \
     mainwindow/mainwindow.h \
     messaging-protocol/messagingprotocol.h \
+    models/IUser.h \
+    models/frienduser.h \
+    models/mainuser.h \
     transport/socketconnection.h \
     utils/DataPartImageHelper.hpp \
     utils/QByteArrayConverter.hpp

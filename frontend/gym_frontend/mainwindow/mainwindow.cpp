@@ -13,15 +13,17 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete mCurrentUser;
 }
 
 void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
 {
     this->mClientInstance = clientInstance;
     mClientInstance->SetCurrentWindow(this);
-    this->mUserId = userId;
+    this->mCurrentUser = new MainUser(userId);
 
     PerformGetUserDataOperation();
+    PerformGetUserFriendsOperation();
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -51,4 +53,5 @@ void MainWindow::on_update_img_clicked()
     PerformUpdateUserImageOperation();
     PerformGetUserDataOperation();
 }
+
 

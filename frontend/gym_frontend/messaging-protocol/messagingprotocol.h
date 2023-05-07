@@ -5,6 +5,7 @@
 
 #include <QString>
 #include <QByteArray>
+#include <vector>
 
 using json = nlohmann::json;
 
@@ -15,9 +16,13 @@ public:
     static void BuildAuthorize(json& outMessage, const QString& userLogin, const QString& userPassword);
     static void AcquireAuthorizeReply(const json& message, int& outUserId, QString& outStatus);
 
-    // Get user data by Id
+    // Get main user data by Id
     static void BuildGetUserData(json& outMessage, int userId);
-    static void AcquireGetUserDataReply(const json& message, QString& outUserName, QString& outUserPassword);
+    static void AcquireGetUserDataReply(const json& message, QString& outUserName, QString& outUserPassword, QString& outUserHashtag, QString& outUserEmail, float& outUserMaxBench, float& outUserMaxSquat, float& outUserMaxDeadlift, int& outUserHeight, float& outUserWeight, int &outUserAge, int &outUserPoints);
+
+    // Get user friends by Id
+    static void BuildGetUserFriends(json& outMessage, int userId);
+    static void AcquireGetUserFriendsReply(const json& message, std::vector<int>& outIds);
 
     // Update user image by Id
     static void BuildUpdateImage(json& outMessage, int userId, int imageSize);

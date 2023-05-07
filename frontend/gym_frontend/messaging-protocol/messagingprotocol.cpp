@@ -30,10 +30,39 @@ void MessagingProtocol::BuildGetUserData(json& outMessage, int userId)
     };
 }
 
-void MessagingProtocol::AcquireGetUserDataReply(const json& message, QString& outUserName, QString& outUserPassword)
+void MessagingProtocol::AcquireGetUserDataReply(const json& message, QString& outUserName, QString& outUserPassword, QString& outUserHashtag, QString& outUserEmail, float& outUserMaxBench
+                                                    , float& outUserMaxSquat, float& outUserMaxDeadlift, int& outUserHeight, float& outUserWeight, int &outUserAge, int &outUserPoints)
 {
     outUserName = QString::fromStdString(message["Name"]);
     outUserPassword = QString::fromStdString(message["Password"]);
+    outUserHashtag = QString::fromStdString(message["Hashtag"]);
+    outUserEmail = QString::fromStdString(message["Email"]);
+    outUserMaxBench = message["MaxBench"];
+    outUserMaxSquat = message["MaxSquat"];
+    outUserMaxDeadlift = message["MaxDeadlift"];
+    outUserHeight = message["Height"];
+    outUserWeight = message["Weight"];
+    outUserAge = message["Age"];
+    outUserPoints = message["Points"];
+}
+
+//
+void MessagingProtocol::BuildGetUserFriends(json& outMessage, int userId)
+{
+    outMessage =
+    {
+        {"Operation", "GetUserFriends"},
+        {"UserId", userId},
+    };
+}
+
+void MessagingProtocol::AcquireGetUserFriendsReply(const json& message, std::vector<int>& outIds)
+{
+    auto idsArray = message["Friends"];
+    for (const auto& id : idsArray)
+    {
+        outIds.push_back(id);
+    }
 }
 
 //

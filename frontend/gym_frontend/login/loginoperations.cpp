@@ -27,7 +27,7 @@ void Login::PerformAuthorizeOperation(int& outUserId)
 
     int userId = 0;
     QString status;
-    qDebug() << "Receiveing ";
+    qDebug() << "Receiving ";
     const json serverResponse = mClientInstance->ReceiveDataFromServer();       // RCV User Id and status
     MessagingProtocol::AcquireAuthorizeReply(serverResponse, userId, status);
     qDebug() << "Received " << userId << status;
@@ -41,7 +41,7 @@ void Login::PerformAuthorizeOperation(int& outUserId)
         ui->no_user_found->show();
         return;
     }
-    else
+    else // invalid password
     {
         ui->invalid_password->show();
         return;
