@@ -12,6 +12,8 @@
 #include "models/mainuser.h"
 #include "models/frienduser.h"
 #include "friendwindow/friendwindow.h"
+#include "models/userpost.h"
+#include "postwindow/postwindow.h"
 
 #include <QMainWindow>
 
@@ -40,11 +42,14 @@ public:
 signals:
     void BackToAuthorization();
     void OpenFriendWindow(Client* clientInstance, MainUser* mainUser, FriendUser* friendUser);
+    void OpenPostWindow(UserPost* userPost, QString userName);
 
 public slots:
     void AuthorizationSuccess(Client* clientInstance, int userId);
     void OnFriendClicked(QListWidgetItem* item);
-    void BackToMainWindowSlot();
+    void OnPostClicked(QListWidgetItem* item);
+    void BackToMainWindowFromFriendSlot();
+    void BackToMainWindowFromPostSlot();
 
 private slots:
     void on_pushButton_clicked();
@@ -52,21 +57,29 @@ private slots:
     void on_update_img_clicked();
 
 private:
+    QString GetUsernameByPost(UserPost* post);
     void FillFriendList();
     void CreateFriendWindow();
+    void CreatePostWindow();
+    void FillPostsList();
 
 private: // user operations
     void PerformGetUserDataOperation();
     void PerformUpdateUserImageOperation();
     void PerformGetUserFriendsOperation();
+    void PerformGetPostsOperation();
 
 private:
     Ui::MainWindow *ui;
     Client* mClientInstance;
     MainUser* mCurrentUser;
+    std::vector<UserPost*> mPosts;
 
     FriendWindow* mFriendWindow;
     bool mIsFriendWindowCreated{false};
+
+    PostWindow* mPostWindow;
+    bool mIsPostWindowCreated{false};
 };
 
 #endif // MAINWINDOW_H

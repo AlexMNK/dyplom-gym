@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->friendList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnFriendClicked(QListWidgetItem*)));
+    connect(ui->postsList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnPostClicked(QListWidgetItem*)));
 }
 
 MainWindow::~MainWindow()
@@ -17,6 +18,12 @@ MainWindow::~MainWindow()
     delete ui;
     delete mCurrentUser;
     delete mFriendWindow;
+    delete mPostWindow;
+
+    for (const auto& post : mPosts)
+    {
+        delete post;
+    }
 }
 
 void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
@@ -27,6 +34,7 @@ void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
 
     PerformGetUserDataOperation();
     PerformGetUserFriendsOperation();
+    PerformGetPostsOperation();
 }
 
 void MainWindow::on_pushButton_clicked()

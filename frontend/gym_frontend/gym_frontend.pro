@@ -22,6 +22,8 @@ SOURCES += \
     messaging-protocol/messagingprotocol.cpp \
     models/frienduser.cpp \
     models/mainuser.cpp \
+    models/userpost.cpp \
+    postwindow/postwindow.cpp \
     transport/socketconnection.cpp
 
 HEADERS += \
@@ -33,6 +35,8 @@ HEADERS += \
     models/IUser.h \
     models/frienduser.h \
     models/mainuser.h \
+    models/userpost.h \
+    postwindow/postwindow.h \
     transport/socketconnection.h \
     utils/DataPartImageHelper.hpp \
     utils/QByteArrayConverter.hpp
@@ -40,7 +44,8 @@ HEADERS += \
 FORMS += \
     friendwindow/friendwindow.ui \
     login/login.ui \
-    mainwindow/mainwindow.ui
+    mainwindow/mainwindow.ui \
+    postwindow/postwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

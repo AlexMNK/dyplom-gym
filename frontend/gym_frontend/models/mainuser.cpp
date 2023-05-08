@@ -37,3 +37,17 @@ void MainUser::AcquireGetUserDataReply(const json& message)
     qDebug() << mUserPoints;
 }
 
+const FriendUser* MainUser::GetFriendById(int id)
+{
+    for (const auto& friendInstance: mUserFriends)
+    {
+        if (friendInstance->GetUserId() == id)
+        {
+            return friendInstance;
+            break;
+        }
+    }
+
+    return nullptr;
+}
+

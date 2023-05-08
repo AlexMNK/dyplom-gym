@@ -6,18 +6,18 @@
 class IUser
 {
 public:
-    int GetUserId() { return mUserId; }
-    QString GetUserName() { return mUserName; }
-    QString GetUserEmail() { return mUserEmail; }
-    QString GetUserHashtag() { return mUserHashtag; }
-    QByteArray* GetUserPicture() { return mUserProfilePicture; }
-    float GetUserMaxBench() { return mUserMaxBench; }
-    float GetUserMaxSquat() { return mUserMaxSquat; }
-    float GetUserMaxDeadlift() { return mUserMaxDeadlift; }
-    int GetUserHeight() { return mUserHeight; }
-    float GetUserWeight() { return mUserWeight; }
-    int GetUserAge() { return mUserAge; }
-    int GetUserPoints() { return mUserPoints; }
+    int GetUserId() const { return mUserId; }
+    QString GetUserName() const { return mUserName; }
+    QString GetUserEmail() const { return mUserEmail; }
+    QString GetUserHashtag() const { return mUserHashtag; }
+    QByteArray* GetUserPicture() const { return mUserProfilePicture; }
+    float GetUserMaxBench() const { return mUserMaxBench; }
+    float GetUserMaxSquat() const { return mUserMaxSquat; }
+    float GetUserMaxDeadlift() const { return mUserMaxDeadlift; }
+    int GetUserHeight() const { return mUserHeight; }
+    float GetUserWeight() const { return mUserWeight; }
+    int GetUserAge() const { return mUserAge; }
+    int GetUserPoints() const { return mUserPoints; }
 
     void SetUserPicture(QByteArray* pictureData) { mUserProfilePicture = pictureData; }
 

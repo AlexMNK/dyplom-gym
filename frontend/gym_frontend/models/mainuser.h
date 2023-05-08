@@ -25,6 +25,8 @@ public:
     void BuildGetUserDataRequest(json& outMessage);
     void AcquireGetUserDataReply(const json& message);
 
+    const FriendUser* GetFriendById(int id);
+
 private:
 
     QString mUserPassword;

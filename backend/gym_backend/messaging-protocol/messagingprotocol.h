@@ -25,6 +25,14 @@ public:
     static void AcquireGetUserFriends(const json& message, int& outId);
     static void BuildGetUserFriendsReply(json& outMessage, const std::vector<std::pair<int, QString>> friendIds);
 
+    // Get all friend post ids by user id
+    static void AcquireGetPosts(const json& message, int& outId);
+    static void BuildGetPostsReply(json& outMessage, const std::vector<int> postIds);
+
+    // Get all post info by post id
+    static void AcquireGetPostData(const json& message, int& outPostId);
+    static void BuildGetPostDataReply(json& outMessage, const int postUserId, const QString& postText, const QString& postTime);
+
     // Update user image by Id
     static void AcquireUpdateImage(const json& message, int& outId, int& outImageSize);
     static void BuildUpdateImageReply(json& outMessage, const bool result);
@@ -35,4 +43,3 @@ public:
 };
 
 #endif // MESSAGINGPROTOCOL_H
-

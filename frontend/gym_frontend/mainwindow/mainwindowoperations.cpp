@@ -97,7 +97,7 @@ void MainWindow::PerformUpdateUserImageOperation()
     json updateImageMessage;
     MessagingProtocol::BuildUpdateImage(updateImageMessage, mCurrentUser->GetUserId(), imageSize);
 
-    mClientInstance->SendDataToServer(updateImageMessage);                                      // SEND user if and image size
+    mClientInstance->SendDataToServer(updateImageMessage);                                      // SEND user id and image size
 
     const json serverReply2 = mClientInstance->ReceiveDataFromServer();                         // RCV for sync
 
@@ -113,3 +113,44 @@ void MainWindow::PerformUpdateUserImageOperation()
         mCurrentUser->SetUserPicture(byteImage);
     }
 }
+
+void MainWindow::PerformGetPostsOperation()
+{
+    mPosts.clear(); // clear prev posts before loading once again
+
+    std::vector<int> postIds;
+
+    json getPosts;
+    MessagingProtocol::BuildGetPosts(getPosts, mCurrentUser->GetUserId());
+
+    mClientInstance->SendDataToServer(getPosts);                                 // SEND user id to get posts ids
+
+    const json serverReply = mClientInstance->ReceiveDataFromServer();           // RCV post ids
+
+    MessagingProtocol::AcquireGetPostsReply(serverReply, postIds);
+
+    for (const auto& postId : postIds)
+    {
+        int imageSize;
+        json getPostDataMessage;
+        MessagingProtocol::BuildGetPostData(getPostDataMessage, postId);
+
+        mClientInstance->SendDataToServer(getPostDataMessage);                                                                          // SEND post id
+
+        const json serverImageSize = mClientInstance->ReceiveDataFromServer();                                                           // RCV post image size
+
+        MessagingProtocol::AcquireImageSize(serverImageSize, imageSize);
+        UserPost* userPost = new UserPost(postId);
+
+        userPost->SetPostPicture(&DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize));         // RCV image by parts
+
+        const json serverReply = mClientInstance->ReceiveDataFromServer();                                                              // RCV all remaining post data
+
+        userPost->AcquireGetPostDataReply(serverReply);
+        mPosts.push_back(userPost);
+    }
+
+    FillPostsList();
+}
+
+

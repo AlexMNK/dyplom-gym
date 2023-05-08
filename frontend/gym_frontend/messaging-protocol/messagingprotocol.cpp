@@ -67,6 +67,43 @@ void MessagingProtocol::AcquireGetUserFriendsReply(const json& message, std::vec
 }
 
 //
+void MessagingProtocol::BuildGetPosts(json& outMessage, int userId)
+{
+    outMessage =
+    {
+        {"Operation", "GetPosts"},
+        {"UserId", userId},
+    };
+}
+
+void MessagingProtocol::AcquireGetPostsReply(const json& message, std::vector<int>& outIds)
+{
+    int size = message["PostIds"].size();
+
+    for(int i = 0; i < size; ++i)
+    {
+        outIds.push_back(message["PostIds"][i]);
+    }
+}
+
+//
+void MessagingProtocol::BuildGetPostData(json& outMessage, int postId)
+{
+    outMessage =
+    {
+        {"Operation", "GetPostData"},
+        {"PostId", postId},
+    };
+}
+
+void MessagingProtocol::AcquireGetPostDataReply(const json& message, int& outPostUserId, QString& outPostText, QString& outPostTime)
+{
+    outPostUserId = message["PostUserId"];
+    outPostText = QString::fromStdString(message["PostText"]);
+    outPostTime = QString::fromStdString(message["PostTime"]);
+}
+
+//
 void MessagingProtocol::BuildUpdateImage(json& outMessage, int userId, int imageSize)
 {
     outMessage =

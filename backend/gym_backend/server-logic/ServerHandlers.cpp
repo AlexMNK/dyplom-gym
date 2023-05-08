@@ -13,24 +13,28 @@ typedef bool (*DataPartHandler)(SocketConnection* socketConnection, DBTransport*
 
 static bool HandleGayOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleAuthorizeOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleGetUserFriendsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleGetPostsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
     {"GAY", &HandleGayOperation},
     {"Authorize", &HandleAuthorizeOperation},
+    {"GetUserFriends", &HandleGetUserFriendsOperation},
+    {"GetPosts", &HandleGetPostsOperation},
 };
 
 // -- Data part handlers -- //
 
 static bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleUpdateUserImageOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
-static bool HandleGetUserFriendsOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleGetPostDataOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, DataPartHandler> dataPartHandlers =
 {
     {"GetUserData", &HandleGetUserDataOperation},
     {"UpdateUserImage", &HandleUpdateUserImageOperation},
-    {"GetUserFriends", &HandleGetUserFriendsOperation}
+    {"GetPostData", &HandleGetPostDataOperation},
 };
 
 bool ServerMessageHandler::HandleMessage(SocketConnection* socketConnection, DBTransport* dbTransport, const QString& operation, const json& userMessage, json& outResultMessage)
@@ -129,6 +133,58 @@ bool HandleGayOperation(DBTransport* dbTransport, const json& userMessage, json&
     return true;
 }
 
+bool HandleGetUserFriendsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId;
+    std::vector<std::pair<int, QString>> friendIds;
+    MessagingProtocol::AcquireGetUserFriends(userMessage, userId);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT responder_user_id, friends_since FROM Friendships WHERE requester_user_id = " + QString::number(userId) + " AND STATUS = 2 "
+                                                   "UNION SELECT requester_user_id, friends_since FROM Friendships WHERE responder_user_id = " + QString::number(userId) + " AND STATUS = 2");
+    if (optionalQuery)
+    {
+        QSqlQuery query(std::move(optionalQuery.value()));
+
+        while (DBHelper::GetNextQueryResultRow(query))
+        {
+            friendIds.push_back(std::make_pair(DBHelper::GetQueryData(query, 0).toInt(), DBHelper::GetQueryData(query, 1).toString()));
+        }
+
+        MessagingProtocol::BuildGetUserFriendsReply(outResultMessage, friendIds);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool HandleGetPostsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId;
+    std::vector<int> postIds;
+    MessagingProtocol::AcquireGetPosts(userMessage, userId);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT id FROM Posts WHERE post_user_id IN "
+                                                   "(SELECT responder_user_id FROM Friendships WHERE requester_user_id = " + QString::number(userId) + " "
+                                                   "UNION SELECT requester_user_id FROM Friendships WHERE responder_user_id = " + QString::number(userId) + " AND STATUS = 2) "
+                                                   "OR post_user_id = " + QString::number(userId));
+    if (optionalQuery)
+    {
+        QSqlQuery query(std::move(optionalQuery.value()));
+
+        while (DBHelper::GetNextQueryResultRow(query))
+        {
+            postIds.push_back((DBHelper::GetQueryData(query, 0).toInt()));
+        }
+
+        MessagingProtocol::BuildGetPostsReply(outResultMessage, postIds);
+
+        return true;
+    }
+
+    return false;
+}
+
 // -------------------------------------------- DATA PART HANDLERS ---------------------------------------------------//
 
 bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
@@ -196,31 +252,6 @@ bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport*
     return false;
 }
 
-bool HandleGetUserFriendsOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
-{
-    int userId;
-    std::vector<std::pair<int, QString>> friendIds;
-    MessagingProtocol::AcquireGetUserFriends(userMessage, userId);
-
-    auto optionalQuery = dbTransport->ExecuteQuery("SELECT responder_user_id, friends_since FROM Friendships WHERE requester_user_id = " + QString::number(userId) + " AND STATUS = 2 "
-                                                   "UNION SELECT requester_user_id, friends_since FROM Friendships WHERE responder_user_id = " + QString::number(userId) + " AND STATUS = 2");
-    if (optionalQuery)
-    {
-        QSqlQuery query(std::move(optionalQuery.value()));
-
-        while (DBHelper::GetNextQueryResultRow(query))
-        {
-            friendIds.push_back(std::make_pair(DBHelper::GetQueryData(query, 0).toInt(), DBHelper::GetQueryData(query, 1).toString()));
-        }
-
-        MessagingProtocol::BuildGetUserFriendsReply(outResultMessage, friendIds);
-
-        return true;
-    }
-
-    return false;
-}
-
 bool HandleUpdateUserImageOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
 {
     json status =
@@ -250,6 +281,51 @@ bool HandleUpdateUserImageOperation(SocketConnection* socketConnection, DBTransp
     MessagingProtocol::BuildUpdateImageReply(outResultMessage, false);
     return false;
 }
+
+bool HandleGetPostDataOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int postId;
+    MessagingProtocol::AcquireGetPostData(userMessage, postId);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT * from Posts WHERE id = " + QString::number(postId));
+    if (optionalQuery)
+    {
+        QSqlQuery query(std::move(optionalQuery.value()));
+
+        if (DBHelper::GetNextQueryResultRow(query))
+        {
+            int postUserId = DBHelper::GetQueryData(query, 1).toInt();
+            QString postText = DBHelper::GetQueryData(query, 2).toString();
+            QString postTime = DBHelper::GetQueryData(query, 3).toString();
+            int postPictureId = DBHelper::GetQueryData(query, 4).toInt();
+
+            auto optionalQuery2 = dbTransport->ExecuteQuery("SELECT image from Images WHERE id = " + QString::number(postPictureId));
+            if (optionalQuery2)
+            {
+                QSqlQuery query2(std::move(optionalQuery2.value()));
+                QByteArray postImage;
+
+                if (DBHelper::GetNextQueryResultRow(query2))
+                {
+                    postImage = DBHelper::GetQueryData(query2, 0).toByteArray();
+                }
+
+                json imageSize;
+                MessagingProtocol::BuildImageSize(imageSize, postImage.size());
+                socketConnection->Write(imageSize);
+
+                DataPartImageHelper::SendImageByParts(socketConnection, postImage);
+
+                MessagingProtocol::BuildGetPostDataReply(outResultMessage, postUserId, postText, postTime);
+
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 
 
 

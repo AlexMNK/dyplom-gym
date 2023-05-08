@@ -24,6 +24,14 @@ public:
     static void BuildGetUserFriends(json& outMessage, int userId);
     static void AcquireGetUserFriendsReply(const json& message, std::vector<std::pair<int, QString>>& outIds);
 
+    // Get all friend post ids by user id
+    static void BuildGetPosts(json& outMessage, int userId);
+    static void AcquireGetPostsReply(const json& message, std::vector<int>& outIds);
+
+    // Get all post info by post id
+    static void BuildGetPostData(json& outMessage, int postId);
+    static void AcquireGetPostDataReply(const json& message, int& outPostUserId, QString& outPostText, QString& outPostTime);
+
     // Update user image by Id
     static void BuildUpdateImage(json& outMessage, int userId, int imageSize);
     static void AcquireUpdateImageReply(const json& message, bool& outResult);
