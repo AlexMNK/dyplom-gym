@@ -1,9 +1,10 @@
 #include "frienduser.h"
 #include <QDebug>
 
-FriendUser::FriendUser(int id)
+FriendUser::FriendUser(int id, QString friendsSince)
 {
     this->mUserId = id;
+    this->mFriendsSince = friendsSince;
 }
 
 void FriendUser::AcquireGetUserDataReply(const json& message, FriendStatuses status)
@@ -13,6 +14,7 @@ void FriendUser::AcquireGetUserDataReply(const json& message, FriendStatuses sta
                                                    mUserMaxSquat, mUserMaxDeadlift, mUserHeight, mUserWeight, mUserAge, mUserPoints);
 
     qDebug() << "Friend user with id " << mUserId;
+    qDebug() << "Friends since " << mFriendsSince;
 
     qDebug() << mUserName;
     qDebug() << dummyPassword;

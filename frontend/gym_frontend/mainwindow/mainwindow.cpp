@@ -8,12 +8,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    connect(ui->friendList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnFriendClicked(QListWidgetItem*)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete mCurrentUser;
+    delete mFriendWindow;
 }
 
 void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)

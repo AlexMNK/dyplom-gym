@@ -21,13 +21,15 @@ enum FriendStatuses
 class FriendUser : public IUser
 {
 public:
-    FriendUser(int id);
+    FriendUser(int id, QString friendsSince);
     FriendStatuses GetUserFriendStatus() { return mUserFriendStatus; }
+    QString GetUserFriendFriendsSince() { return mFriendsSince; }
 
     void AcquireGetUserDataReply(const json& message, FriendStatuses status);
 
 private:
      FriendStatuses mUserFriendStatus;
+     QString mFriendsSince;
 };
 
 #endif // FRIENDUSER_H

@@ -23,7 +23,7 @@ public:
                                           int userAge, int userPoints);
 
     static void AcquireGetUserFriends(const json& message, int& outId);
-    static void BuildGetUserFriendsReply(json& outMessage, const std::vector<int> friendIds);
+    static void BuildGetUserFriendsReply(json& outMessage, const std::vector<std::pair<int, QString>> friendIds);
 
     // Update user image by Id
     static void AcquireUpdateImage(const json& message, int& outId, int& outImageSize);

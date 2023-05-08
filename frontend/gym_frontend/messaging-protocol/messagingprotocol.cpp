@@ -56,12 +56,13 @@ void MessagingProtocol::BuildGetUserFriends(json& outMessage, int userId)
     };
 }
 
-void MessagingProtocol::AcquireGetUserFriendsReply(const json& message, std::vector<int>& outIds)
+void MessagingProtocol::AcquireGetUserFriendsReply(const json& message, std::vector<std::pair<int, QString>>& outIds)
 {
-    auto idsArray = message["Friends"];
-    for (const auto& id : idsArray)
+    int size = message["Friends"].size();
+
+    for(int i = 0; i < size; ++i)
     {
-        outIds.push_back(id);
+        outIds.push_back(std::make_pair(message["Friends"][i], QString::fromStdString(message["FriendsSince"][i])));
     }
 }
 

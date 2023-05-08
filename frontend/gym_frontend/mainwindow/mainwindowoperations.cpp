@@ -35,7 +35,7 @@ void MainWindow::PerformGetUserDataOperation()
 
 void MainWindow::PerformGetUserFriendsOperation()
 {
-    std::vector<int> userFriends;
+    std::vector<std::pair<int, QString>> userFriends;
 
     json getUserFriends;
     MessagingProtocol::BuildGetUserFriends(getUserFriends, mCurrentUser->GetUserId());
@@ -46,18 +46,18 @@ void MainWindow::PerformGetUserFriendsOperation()
 
     MessagingProtocol::AcquireGetUserFriendsReply(serverFriendsIds, userFriends);
 
-    for (const auto& friendId : userFriends) // cycle to get all friends data
+    for (const auto& friendInstance : userFriends) // cycle to get all friends data
     {
         int imageSize;
         json getUserDataMessage;
-        MessagingProtocol::BuildGetUserData(getUserDataMessage, friendId);
+        MessagingProtocol::BuildGetUserData(getUserDataMessage, friendInstance.first);
 
         mClientInstance->SendDataToServer(getUserDataMessage);                                                                         // SEND friend id
 
         const json serverImageSize = mClientInstance->ReceiveDataFromServer();                                                         // RCV image size
 
         MessagingProtocol::AcquireImageSize(serverImageSize, imageSize);
-        FriendUser* friendUser = new FriendUser(friendId);
+        FriendUser* friendUser = new FriendUser(friendInstance.first, friendInstance.second); // first - id, second - friends since
 
         friendUser->SetUserPicture(&DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize));      // RCV image by parts
 
@@ -69,6 +69,8 @@ void MainWindow::PerformGetUserFriendsOperation()
 
     qDebug() << "friendlist size";
     qDebug() << mCurrentUser->GetUserFriends().size();
+
+    FillFriendList();
 }
 
 void MainWindow::PerformUpdateUserImageOperation()

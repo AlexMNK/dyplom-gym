@@ -12,10 +12,12 @@ INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\json\include
 
 SOURCES += \
     client-logic/client.cpp \
+    friendwindow/friendwindow.cpp \
     login/loginoperations.cpp \
     main.cpp \
     login/login.cpp \
     mainwindow/mainwindow.cpp \
+    mainwindow/mainwindowhelpers.cpp \
     mainwindow/mainwindowoperations.cpp \
     messaging-protocol/messagingprotocol.cpp \
     models/frienduser.cpp \
@@ -24,6 +26,7 @@ SOURCES += \
 
 HEADERS += \
     client-logic/client.h \
+    friendwindow/friendwindow.h \
     login/login.h \
     mainwindow/mainwindow.h \
     messaging-protocol/messagingprotocol.h \
@@ -35,6 +38,7 @@ HEADERS += \
     utils/QByteArrayConverter.hpp
 
 FORMS += \
+    friendwindow/friendwindow.ui \
     login/login.ui \
     mainwindow/mainwindow.ui
 

@@ -22,7 +22,7 @@ public:
 
     // Get user friends by Id
     static void BuildGetUserFriends(json& outMessage, int userId);
-    static void AcquireGetUserFriendsReply(const json& message, std::vector<int>& outIds);
+    static void AcquireGetUserFriendsReply(const json& message, std::vector<std::pair<int, QString>>& outIds);
 
     // Update user image by Id
     static void BuildUpdateImage(json& outMessage, int userId, int imageSize);

@@ -199,18 +199,18 @@ bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport*
 bool HandleGetUserFriendsOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
 {
     int userId;
-    std::vector<int> friendIds;
+    std::vector<std::pair<int, QString>> friendIds;
     MessagingProtocol::AcquireGetUserFriends(userMessage, userId);
 
-    auto optionalQuery = dbTransport->ExecuteQuery("SELECT responder_user_id FROM Friendships WHERE requester_user_id = " + QString::number(userId) + " AND STATUS = 2 "
-                                                   "UNION SELECT requester_user_id FROM Friendships WHERE responder_user_id = " + QString::number(userId) + " AND STATUS = 2");
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT responder_user_id, friends_since FROM Friendships WHERE requester_user_id = " + QString::number(userId) + " AND STATUS = 2 "
+                                                   "UNION SELECT requester_user_id, friends_since FROM Friendships WHERE responder_user_id = " + QString::number(userId) + " AND STATUS = 2");
     if (optionalQuery)
     {
         QSqlQuery query(std::move(optionalQuery.value()));
 
         while (DBHelper::GetNextQueryResultRow(query))
         {
-            friendIds.push_back(DBHelper::GetQueryData(query, 0).toInt());
+            friendIds.push_back(std::make_pair(DBHelper::GetQueryData(query, 0).toInt(), DBHelper::GetQueryData(query, 1).toString()));
         }
 
         MessagingProtocol::BuildGetUserFriendsReply(outResultMessage, friendIds);

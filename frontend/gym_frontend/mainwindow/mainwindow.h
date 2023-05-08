@@ -11,6 +11,7 @@
 #include "messaging-protocol/messagingprotocol.h"
 #include "models/mainuser.h"
 #include "models/frienduser.h"
+#include "friendwindow/friendwindow.h"
 
 #include <QMainWindow>
 
@@ -20,6 +21,7 @@
 #include <QFileDialog>
 #include <QImageReader>
 #include <QBuffer>
+#include <QListWidgetItem>
 
 using json = nlohmann::json;
 
@@ -37,10 +39,12 @@ public:
 
 signals:
     void BackToAuthorization();
+    void OpenFriendWindow(Client* clientInstance, MainUser* mainUser, FriendUser* friendUser);
 
 public slots:
     void AuthorizationSuccess(Client* clientInstance, int userId);
-
+    void OnFriendClicked(QListWidgetItem* item);
+    void BackToMainWindowSlot();
 
 private slots:
     void on_pushButton_clicked();
@@ -48,7 +52,8 @@ private slots:
     void on_update_img_clicked();
 
 private:
-    void StartChatRunnerThread();
+    void FillFriendList();
+    void CreateFriendWindow();
 
 private: // user operations
     void PerformGetUserDataOperation();
@@ -59,6 +64,9 @@ private:
     Ui::MainWindow *ui;
     Client* mClientInstance;
     MainUser* mCurrentUser;
+
+    FriendWindow* mFriendWindow;
+    bool mIsFriendWindowCreated{false};
 };
 
 #endif // MAINWINDOW_H
