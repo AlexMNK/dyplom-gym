@@ -8,6 +8,8 @@
 
 void MainWindow::FillFriendList()
 {
+    ui->friendList->clear();
+
     for (const auto& friendInstance : mCurrentUser->GetUserFriends())
     {
         if (friendInstance->GetUserFriendStatus() == FriendStatusIsFriend)
