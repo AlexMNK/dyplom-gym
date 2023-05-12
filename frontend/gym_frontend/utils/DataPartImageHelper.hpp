@@ -23,6 +23,8 @@ public:
         int dataPartCount = (imageTotalSize / SEGMENT_SIZE) + 1;
         int currentDataOffset = 0;
 
+        socketConnection->ReadRaw();
+
         while (dataPartCount)
         {
             if (dataPartCount == 1)
@@ -50,6 +52,8 @@ public:
         int currentDataOffset = 0;
 
         qDebug() << "Part Count " << dataPartCount;
+
+        socketConnection->WriteRaw({"any data"});
 
         QByteArray* imageData = new QByteArray();
         imageData->reserve(imageSize);

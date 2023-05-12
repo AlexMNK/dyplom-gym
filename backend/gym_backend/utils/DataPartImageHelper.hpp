@@ -23,6 +23,8 @@ public:
         int dataPartCount = (imageTotalSize / SEGMENT_SIZE) + 1;
         int currentDataOffset = 0;
 
+        socketConnection->ReadRaw();
+
         while (dataPartCount)
         {
             if (dataPartCount == 1)
@@ -48,6 +50,8 @@ public:
     {
         int dataPartCount = (imageSize / SEGMENT_SIZE) + 1;
         int currentDataOffset = 0;
+
+        socketConnection->WriteRaw({"any data"});
 
         qDebug() << "Part Count " << dataPartCount;
 
