@@ -138,3 +138,41 @@ void MessagingProtocol::BuildImageSize(json& outMessage, const int size)
         {"ImageSize", size},
     };
 }
+
+//
+void MessagingProtocol::AcquireGetUserExercises(const json& message, int& outId)
+{
+    outId = message["UserId"];
+}
+
+void MessagingProtocol::BuildGetUserExercisesReply(json& outMessage, const std::vector<int> exerciseIds)
+{
+    json idsArray;
+
+    for (const auto& id : exerciseIds)
+    {
+        idsArray.push_back(id);
+    }
+
+    outMessage =
+    {
+        {"ExerciseIds", idsArray},
+    };
+}
+
+//
+void MessagingProtocol::AcquireGetExerciseData(const json& message, int& outExerciseId)
+{
+    outExerciseId = message["ExerciseId"];
+}
+
+void MessagingProtocol::BuildGetExerciseDataReply(json& outMessage, const QString& dayOfTheWeek, const QString& exerciseName, int duration)
+{
+    outMessage =
+    {
+        {"DayOfTheWeek", dayOfTheWeek.toStdString()},
+        {"ExerciseName", exerciseName.toStdString()},
+        {"Duration", duration},
+    };
+}
+

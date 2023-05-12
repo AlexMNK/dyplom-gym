@@ -14,6 +14,7 @@
 #include "friendwindow/friendwindow.h"
 #include "models/userpost.h"
 #include "postwindow/postwindow.h"
+#include "models/exercise.h"
 
 #include <QMainWindow>
 
@@ -68,12 +69,14 @@ private: // user operations
     void PerformUpdateUserImageOperation();
     void PerformGetUserFriendsOperation();
     void PerformGetPostsOperation();
+    void PerformGetUserExercises();
 
 private:
     Ui::MainWindow *ui;
     Client* mClientInstance;
     MainUser* mCurrentUser;
     std::vector<UserPost*> mPosts;
+    std::vector<Exercise*> mExercises;
 
     FriendWindow* mFriendWindow;
     bool mIsFriendWindowCreated{false};

@@ -15,6 +15,8 @@ static bool HandleGayOperation(DBTransport* dbTransport, const json& userMessage
 static bool HandleAuthorizeOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetUserFriendsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetPostsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleGetUserExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
@@ -22,6 +24,8 @@ static std::map<QString, Handler> messageHandlers =
     {"Authorize", &HandleAuthorizeOperation},
     {"GetUserFriends", &HandleGetUserFriendsOperation},
     {"GetPosts", &HandleGetPostsOperation},
+    {"GetUserExercises", &HandleGetUserExercisesOperation},
+    {"GetExerciseData", &HandleGetExerciseDataOperation},
 };
 
 // -- Data part handlers -- //
@@ -180,6 +184,58 @@ bool HandleGetPostsOperation(DBTransport* dbTransport, const json& userMessage, 
         MessagingProtocol::BuildGetPostsReply(outResultMessage, postIds);
 
         return true;
+    }
+
+    return false;
+}
+
+bool HandleGetUserExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId;
+    std::vector<int> exerciseIds;
+    MessagingProtocol::AcquireGetUserExercises(userMessage, userId);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT id from User_Exercises WHERE user_id = " + QString::number(userId));
+    if (optionalQuery)
+    {
+        QSqlQuery query(std::move(optionalQuery.value()));
+
+        while (DBHelper::GetNextQueryResultRow(query))
+        {
+            exerciseIds.push_back((DBHelper::GetQueryData(query, 0).toInt()));
+        }
+
+        MessagingProtocol::BuildGetUserExercisesReply(outResultMessage, exerciseIds);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int exerciseId;
+    MessagingProtocol::AcquireGetExerciseData(userMessage, exerciseId);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT day_of_the_week_name, exercise_name, duration from User_Exercises "
+                                                   "JOIN Days_Of_The_Week on day_of_the_week_id = Days_Of_The_Week.id "
+                                                   "JOIN Exercises on exercise_id = Exercises.id "
+                                                   "WHERE User_Exercises.id = " + QString::number(exerciseId));
+    if (optionalQuery)
+    {
+        QSqlQuery query(std::move(optionalQuery.value()));
+
+        if (DBHelper::GetNextQueryResultRow(query))
+        {
+            QString dayOfTheWeek = DBHelper::GetQueryData(query, 0).toString();
+            QString exerciseName = DBHelper::GetQueryData(query, 1).toString();
+            int duration = DBHelper::GetQueryData(query, 2).toInt();
+
+            MessagingProtocol::BuildGetExerciseDataReply(outResultMessage, dayOfTheWeek, exerciseName, duration);
+
+            return true;
+        }
     }
 
     return false;

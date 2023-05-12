@@ -24,6 +24,11 @@ MainWindow::~MainWindow()
     {
         delete post;
     }
+
+    for (const auto& exercise : mExercises)
+    {
+        delete exercise;
+    }
 }
 
 void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
@@ -35,6 +40,7 @@ void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
     PerformGetUserDataOperation();
     PerformGetUserFriendsOperation();
     PerformGetPostsOperation();
+    PerformGetUserExercises();
 }
 
 void MainWindow::on_pushButton_clicked()

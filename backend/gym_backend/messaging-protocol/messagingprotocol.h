@@ -40,6 +40,14 @@ public:
     // Image size
     static void AcquireImageSize(const json& message, int& outImageSize);
     static void BuildImageSize(json& outMessage, const int size);
+
+    // Get all exercises ids by user id
+    static void AcquireGetUserExercises(const json& message, int& outId);
+    static void BuildGetUserExercisesReply(json& outMessage, const std::vector<int> exerciseIds);
+
+    // Get all exercise info by exercise id
+    static void AcquireGetExerciseData(const json& message, int& outExerciseId);
+    static void BuildGetExerciseDataReply(json& outMessage, const QString& dayOfTheWeek, const QString& exerciseName, int duration);
 };
 
 #endif // MESSAGINGPROTOCOL_H

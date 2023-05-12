@@ -132,3 +132,44 @@ void MessagingProtocol::AcquireImageSize(const json& message, int& outImageSize)
 {
     outImageSize = message["ImageSize"];
 }
+
+//
+void MessagingProtocol::BuildGetUserExercises(json& outMessage, int userId)
+{
+    outMessage =
+    {
+        {"Operation", "GetUserExercises"},
+        {"UserId", userId},
+    };
+}
+
+void MessagingProtocol::AcquireGetUserExercisesReply(const json& message, std::vector<int>& outIds)
+{
+    int size = message["ExerciseIds"].size();
+
+    for(int i = 0; i < size; ++i)
+    {
+        outIds.push_back(message["ExerciseIds"][i]);
+    }
+}
+
+//
+void MessagingProtocol::BuildGetExerciseData(json& outMessage, int exerciseId)
+{
+    outMessage =
+    {
+        {"Operation", "GetExerciseData"},
+        {"ExerciseId", exerciseId},
+    };
+}
+
+void MessagingProtocol::AcquireGetExerciseDataReply(const json& message, QString& outDayOfTheWeek, QString& outName, int& outDuration)
+{
+    outDayOfTheWeek = QString::fromStdString(message["DayOfTheWeek"]);
+    outName = QString::fromStdString(message["ExerciseName"]);
+    outDuration = message["Duration"];
+}
+
+
+
+

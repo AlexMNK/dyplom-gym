@@ -153,4 +153,37 @@ void MainWindow::PerformGetPostsOperation()
     FillPostsList();
 }
 
+void MainWindow::PerformGetUserExercises()
+{
+    mExercises.clear(); // clear prev exercises before loading once again
+
+    std::vector<int> exerciseIds;
+
+    json getExercises;
+    MessagingProtocol::BuildGetUserExercises(getExercises, mCurrentUser->GetUserId());
+
+    mClientInstance->SendDataToServer(getExercises);                                 // SEND user id to get exercise ids
+
+    const json serverReply = mClientInstance->ReceiveDataFromServer();              // RCV exercise ids
+
+    MessagingProtocol::AcquireGetUserExercisesReply(serverReply, exerciseIds);
+
+    for (const auto& exerciseId : exerciseIds)
+    {
+        json getExerciseDataMessage;
+        MessagingProtocol::BuildGetExerciseData(getExerciseDataMessage, exerciseId);
+
+        mClientInstance->SendDataToServer(getExerciseDataMessage);                  // SEND exercise id
+
+        const json exerciseData = mClientInstance->ReceiveDataFromServer();         // RCV all exercise data
+
+        Exercise* userExercise = new Exercise(mCurrentUser->GetUserId(), exerciseId);
+
+        userExercise->AcquireGetExerciseDataReply(exerciseData);
+        mExercises.push_back(userExercise);
+    }
+
+    qDebug() << "number of exercises in a week " << mExercises.size();
+}
+
 

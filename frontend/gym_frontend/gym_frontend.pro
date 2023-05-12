@@ -21,6 +21,7 @@ SOURCES += \
     mainwindow/mainwindowhelpers.cpp \
     mainwindow/mainwindowoperations.cpp \
     messaging-protocol/messagingprotocol.cpp \
+    models/exercise.cpp \
     models/frienduser.cpp \
     models/mainuser.cpp \
     models/userpost.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     mainwindow/mainwindow.h \
     messaging-protocol/messagingprotocol.h \
     models/IUser.h \
+    models/exercise.h \
     models/frienduser.h \
     models/mainuser.h \
     models/userpost.h \
