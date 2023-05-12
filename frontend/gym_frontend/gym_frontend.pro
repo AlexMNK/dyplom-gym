@@ -5,6 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\json\include
+INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\mINI\src
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -39,6 +40,7 @@ HEADERS += \
     postwindow/postwindow.h \
     transport/socketconnection.h \
     utils/DataPartImageHelper.hpp \
+    utils/IniHelper.hpp \
     utils/QByteArrayConverter.hpp
 
 FORMS += \

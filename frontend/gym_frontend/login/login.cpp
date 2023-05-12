@@ -1,6 +1,8 @@
 #include "login.h"
 #include "ui_login.h"
 
+#include "utils/IniHelper.hpp"
+
 Login::Login(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Login)
@@ -8,6 +10,21 @@ Login::Login(QWidget *parent)
     ui->setupUi(this);
 
     this->mClientInstance = new Client();
+
+    QString serverHostname, clientLogin, clientPassword;
+    int port;
+
+    if (!ReadIniFile(serverHostname, port, clientLogin, clientPassword))
+    {
+        QMessageBox::critical(this, "Error", "Error reading configuration from ini file");
+        exit(1);
+    }
+
+    if (!clientLogin.isEmpty() && !clientPassword.isEmpty())
+    {
+        ui->user_name->setText(clientLogin);
+        ui->user_password->setText(clientPassword);
+    }
 
     if (!mClientInstance->ConnectToServer("localhost", 1234))
     {
@@ -57,6 +74,21 @@ void Login::on_pushButton_clicked()
 
     if (userId != 0)
     {
+        QString userLogin, userPassword;
+
+        if (ui->rememberMe->isChecked())
+        {
+            userLogin = ui->user_name->text();
+            userPassword = ui->user_password->text();
+        }
+        else
+        {
+            ui->user_name->clear();
+            ui->user_password->clear();
+        }
+
+        SetIniLogCredentials(userLogin, userPassword);
+
         CreateMainWindow();
         emit OpenMainWindow(mClientInstance, userId);
         this->hide();
