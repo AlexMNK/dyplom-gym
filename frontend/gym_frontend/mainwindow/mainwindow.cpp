@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    SetupUiDesign();
     connect(ui->friendList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnFriendClicked(QListWidgetItem*)));
     connect(ui->postsList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnPostClicked(QListWidgetItem*)));
 }
@@ -43,32 +44,16 @@ void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
     PerformGetUserExercises();
 }
 
-void MainWindow::on_pushButton_clicked()
+
+//void MainWindow::on_update_img_clicked() // todo: move this to a personal page
+//{
+//    PerformUpdateUserImageOperation();
+//    PerformGetUserDataOperation();
+//}
+
+
+
+void MainWindow::on_signOutButton_clicked()
 {
     emit BackToAuthorization();
 }
-
-
-void MainWindow::on_Gay_button_clicked()
-{
-    const json GayJson =
-    {
-        {"Operation", "GAY"},
-    };
-
-    mClientInstance->SendDataToServer(GayJson);
-
-    const json serverReply = mClientInstance->ReceiveDataFromServer();
-
-    const QString result = QString::fromStdString(serverReply["GAY"]);
-    QMessageBox::information(this, "Data", result);
-}
-
-
-void MainWindow::on_update_img_clicked()
-{
-    PerformUpdateUserImageOperation();
-    PerformGetUserDataOperation();
-}
-
-

@@ -13,21 +13,13 @@ Login::Login(QWidget *parent)
 
     this->mClientInstance = new Client();
 
-    QString serverHostname, clientLogin, clientPassword;
+    QString serverHostname;
     int port;
 
-    if (!ReadIniFile(serverHostname, port, clientLogin, clientPassword))
+    if (!ReadIniFile(serverHostname, port, mSavedLogin, mSavedPassword))
     {
         QMessageBox::critical(this, "Error", "Error reading configuration from ini file");
         exit(1);
-    }
-
-    QString userName, userPassword;
-
-    if (!clientLogin.isEmpty() && !clientPassword.isEmpty())
-    {      
-        userName = clientLogin;
-        userPassword = clientPassword;
     }
 
     if (!mClientInstance->ConnectToServer("localhost", 1234))
@@ -36,7 +28,7 @@ Login::Login(QWidget *parent)
         exit(1);
     }
 
-    ShowLogIn(userName, userPassword);
+    ShowLogIn(mSavedLogin, mSavedPassword);
 }
 
 Login::~Login()
@@ -108,6 +100,6 @@ void Login::on_GoSignUpButton_clicked()
 
 void Login::on_GoLogInButton_clicked()
 {
-    ShowLogIn("", "");
+    ShowLogIn(mSavedLogin, mSavedPassword);
 }
 

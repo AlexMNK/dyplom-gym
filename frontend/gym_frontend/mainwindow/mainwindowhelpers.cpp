@@ -7,6 +7,11 @@
 #include "models/frienduser.h"
 
 
+void MainWindow::SetupUiDesign()
+{
+    this->setStyleSheet("background-color: white;");
+}
+
 QString MainWindow::GetUsernameByPost(UserPost* post)
 {
     const FriendUser* friendUser = mCurrentUser->GetFriendById(post->GetPostUserId());

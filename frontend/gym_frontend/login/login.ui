@@ -37,8 +37,8 @@
    <string>Login</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="res.qrc">
-    <normaloff>:/new/img/resources/icon.jpg</normaloff>:/new/img/resources/icon.jpg</iconset>
+   <iconset resource="../resources/res.qrc">
+    <normaloff>:/img/icon.jpg</normaloff>:/img/icon.jpg</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">QPushButton { border: 1px solid black }
@@ -204,7 +204,7 @@ QLineEdit { border: 1px solid black }</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap resource="res.qrc">:/new/img/resources/BackgroundWithLogo.jpg</pixmap>
+     <pixmap resource="../resources/res.qrc">:/img/BackgroundWithLogo.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -469,7 +469,7 @@ QLineEdit { border: 1px solid black }</string>
   </widget>
  </widget>
  <resources>
-  <include location="res.qrc"/>
+  <include location="../resources/res.qrc"/>
  </resources>
  <connections/>
 </ui>

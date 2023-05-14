@@ -57,5 +57,7 @@ private:
     MainWindow* mMainWindow;
     bool mIsMainWindowCreated{false};
 
+    QString mSavedLogin;
+    QString mSavedPassword;
 };
 #endif // LOGIN_H

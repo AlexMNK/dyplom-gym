@@ -26,11 +26,14 @@ void MainWindow::PerformGetUserDataOperation()
         QMessageBox::warning(this, "Warning", "Failed to get image data from server");
     }
 
-    ui->image->setPixmap(pixmap);
-
     const json serverReply = mClientInstance->ReceiveDataFromServer();                                                              // RCV all remaining user data
 
     mCurrentUser->AcquireGetUserDataReply(serverReply);
+
+    // update UI -> todo move to a separate function
+    ui->userImage->setPixmap(pixmap);
+    ui->userName->setText(mCurrentUser->GetUserName());
+    ui->userPoints->setText("Points: " + QString::number(mCurrentUser->GetUserPoints()));
 }
 
 void MainWindow::PerformGetUserFriendsOperation()

@@ -53,9 +53,7 @@ public slots:
     void BackToMainWindowFromPostSlot();
 
 private slots:
-    void on_pushButton_clicked();
-    void on_Gay_button_clicked();
-    void on_update_img_clicked();
+    void on_signOutButton_clicked();
 
 private:
     QString GetUsernameByPost(UserPost* post);
@@ -63,6 +61,7 @@ private:
     void CreateFriendWindow();
     void CreatePostWindow();
     void FillPostsList();
+    void SetupUiDesign();
 
 private: // user operations
     void PerformGetUserDataOperation();

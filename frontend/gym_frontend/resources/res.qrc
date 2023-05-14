@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>Background.jpg</file>
+        <file>BackgroundWithLogo.jpg</file>
+        <file>icon.jpg</file>
+    </qresource>
+    <qresource prefix="/ranks">
+        <file>ranks/diamond.png</file>
+        <file>ranks/gold.png</file>
+        <file>ranks/immortal.png</file>
+        <file>ranks/platinum.png</file>
+        <file>ranks/silver.png</file>
+    </qresource>
+</RCC>
