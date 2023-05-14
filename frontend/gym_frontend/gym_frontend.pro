@@ -14,6 +14,7 @@ INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\mINI\src
 SOURCES += \
     client-logic/client.cpp \
     friendwindow/friendwindow.cpp \
+    login/loginhelpers.cpp \
     login/loginoperations.cpp \
     main.cpp \
     login/login.cpp \
@@ -55,3 +56,9 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    login/res.qrc
+
+DISTFILES += \
+    login/resources/depositphotos_73365001-stock-illustration-sport-seamless-pattern.jpg

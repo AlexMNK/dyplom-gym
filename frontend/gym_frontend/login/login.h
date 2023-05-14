@@ -35,11 +35,18 @@ public slots:
     void LogOutSlot();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_loginButton_clicked();
+
+    void on_GoSignUpButton_clicked();
+
+    void on_GoLogInButton_clicked();
 
 private:
     void CreateMainWindow();
     void HideAllErrorLabels();
+    void SetupUiDesign();
+    void ShowLogIn(QString userName, QString userPassword);
+    void ShowSignUp();
 
 private: // user operations
     void PerformAuthorizeOperation(int& outUserId);

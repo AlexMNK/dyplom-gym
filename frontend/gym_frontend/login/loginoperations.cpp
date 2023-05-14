@@ -6,15 +6,25 @@ void Login::PerformAuthorizeOperation(int& outUserId)
 {
     HideAllErrorLabels();
 
+    bool ifNameEmpty = false;
+    bool ifPassEmpty = false;
+
     if (ui->user_name->text().isEmpty())
     {
-        QMessageBox::warning(this, "GAY!", "Enter name!");
-        return;
+        ui->no_user_found->show();
+        ui->no_user_found->setText("Enter a name!");
+        ifNameEmpty = true;
     }
 
     if (ui->user_password->text().isEmpty())
     {
-        QMessageBox::warning(this, "GAY!", "Enter password!");
+        ui->invalid_password->show();
+        ui->invalid_password->setText("Enter a password!");
+        ifPassEmpty = true;
+    }
+
+    if (ifNameEmpty || ifPassEmpty)
+    {
         return;
     }
 
@@ -39,11 +49,13 @@ void Login::PerformAuthorizeOperation(int& outUserId)
     else if (status == "NOUSER")
     {
         ui->no_user_found->show();
+        ui->no_user_found->setText("No user found!");
         return;
     }
     else // invalid password
     {
         ui->invalid_password->show();
+        ui->invalid_password->setText("Invalid password!");
         return;
     }
 }

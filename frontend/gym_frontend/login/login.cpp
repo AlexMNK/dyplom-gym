@@ -9,6 +9,8 @@ Login::Login(QWidget *parent)
 {
     ui->setupUi(this);
 
+    SetupUiDesign();
+
     this->mClientInstance = new Client();
 
     QString serverHostname, clientLogin, clientPassword;
@@ -20,10 +22,12 @@ Login::Login(QWidget *parent)
         exit(1);
     }
 
+    QString userName, userPassword;
+
     if (!clientLogin.isEmpty() && !clientPassword.isEmpty())
-    {
-        ui->user_name->setText(clientLogin);
-        ui->user_password->setText(clientPassword);
+    {      
+        userName = clientLogin;
+        userPassword = clientPassword;
     }
 
     if (!mClientInstance->ConnectToServer("localhost", 1234))
@@ -32,7 +36,7 @@ Login::Login(QWidget *parent)
         exit(1);
     }
 
-    HideAllErrorLabels();
+    ShowLogIn(userName, userPassword);
 }
 
 Login::~Login()
@@ -66,8 +70,7 @@ void Login::LogOutSlot()
     mClientInstance->SetCurrentWindow(this);
 }
 
-
-void Login::on_pushButton_clicked()
+void Login::on_loginButton_clicked()
 {
     int userId = 0;
     PerformAuthorizeOperation(userId);
@@ -94,5 +97,17 @@ void Login::on_pushButton_clicked()
         this->hide();
         mMainWindow->show();
     }
+}
+
+
+void Login::on_GoSignUpButton_clicked()
+{
+    ShowSignUp();
+}
+
+
+void Login::on_GoLogInButton_clicked()
+{
+    ShowLogIn("", "");
 }
 
