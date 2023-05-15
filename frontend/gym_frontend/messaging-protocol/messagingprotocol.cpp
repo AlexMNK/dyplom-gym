@@ -163,10 +163,11 @@ void MessagingProtocol::BuildGetExerciseData(json& outMessage, int exerciseId)
     };
 }
 
-void MessagingProtocol::AcquireGetExerciseDataReply(const json& message, QString& outDayOfTheWeek, QString& outName, int& outDuration)
+void MessagingProtocol::AcquireGetExerciseDataReply(const json& message, QString& outDayOfTheWeek, QString& outName, float& pointsPerHour, int& outDuration)
 {
     outDayOfTheWeek = QString::fromStdString(message["DayOfTheWeek"]);
     outName = QString::fromStdString(message["ExerciseName"]);
+    pointsPerHour = message["PointsPerHour"];
     outDuration = message["Duration"];
 }
 

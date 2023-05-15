@@ -206,7 +206,7 @@ bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMe
     int exerciseId;
     MessagingProtocol::AcquireGetExerciseData(userMessage, exerciseId);
 
-    auto optionalQuery = dbTransport->ExecuteQuery("SELECT day_of_the_week_name, exercise_name, duration from User_Exercises "
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT day_of_the_week_name, exercise_name, points_per_hour, duration from User_Exercises "
                                                    "JOIN Days_Of_The_Week on day_of_the_week_id = Days_Of_The_Week.id "
                                                    "JOIN Exercises on exercise_id = Exercises.id "
                                                    "WHERE User_Exercises.id = " + QString::number(exerciseId));
@@ -218,9 +218,10 @@ bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMe
         {
             QString dayOfTheWeek = DBHelper::GetQueryData(query, 0).toString();
             QString exerciseName = DBHelper::GetQueryData(query, 1).toString();
-            int duration = DBHelper::GetQueryData(query, 2).toInt();
+            float pointsPerHour = DBHelper::GetQueryData(query, 2).toFloat();
+            int duration = DBHelper::GetQueryData(query, 3).toInt();
 
-            MessagingProtocol::BuildGetExerciseDataReply(outResultMessage, dayOfTheWeek, exerciseName, duration);
+            MessagingProtocol::BuildGetExerciseDataReply(outResultMessage, dayOfTheWeek, exerciseName, pointsPerHour, duration);
 
             return true;
         }

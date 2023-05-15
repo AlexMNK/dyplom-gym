@@ -14,9 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
     HideMyProfileSection();
     HideTrainingSection();
     ShowPostsSection();
-
-    connect(ui->friendList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnFriendClicked(QListWidgetItem*)));
-    connect(ui->postsList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnPostClicked(QListWidgetItem*)));
 }
 
 MainWindow::~MainWindow()
@@ -113,5 +110,14 @@ void MainWindow::on_myProfileButton_clicked()
     HidePostsSection();
 
     ShowMyProfileSection();
+}
+
+
+void MainWindow::on_myTrainingButton_clicked()
+{
+    HideMyProfileSection();
+    HidePostsSection();
+
+    ShowTrainingSection();
 }
 

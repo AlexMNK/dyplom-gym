@@ -46,7 +46,7 @@ public:
 
     // Get all exercise info by exercise id
     static void BuildGetExerciseData(json& outMessage, int exerciseId);
-    static void AcquireGetExerciseDataReply(const json& message, QString& outDayOfTheWeek, QString& outName, int& outDuration);
+    static void AcquireGetExerciseDataReply(const json& message, QString& outDayOfTheWeek, QString& outName, float& pointsPerHour, int& outDuration);
 
 
 

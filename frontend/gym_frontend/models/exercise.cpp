@@ -11,7 +11,7 @@ Exercise::Exercise(int userId, int exerciseId)
 
 void Exercise::AcquireGetExerciseDataReply(const json& message)
 {
-    MessagingProtocol::AcquireGetExerciseDataReply(message, mDayOfTheWeek, mExerciseName, mDuration);
+    MessagingProtocol::AcquireGetExerciseDataReply(message, mDayOfTheWeek, mExerciseName, mPointsPerHour, mDuration);
 
-    qDebug() << "Got exercise " << mExerciseName << " on " << mDayOfTheWeek << " with duration " << mDuration;
+    qDebug() << "Got exercise " << mExerciseName << " on " << mDayOfTheWeek << " with duration " << mDuration << "and points " << mPointsPerHour;
 }

@@ -64,10 +64,9 @@ private slots:
     void on_userEditProfile_clicked();
     void on_userSaveProfile_clicked();
     void on_userEditPicture_clicked();
-
     void on_postsButton_clicked();
-
     void on_myProfileButton_clicked();
+    void on_myTrainingButton_clicked();
 
 private: // helpers
     QString GetUsernameByPost(UserPost* post);
@@ -79,6 +78,7 @@ private: // helpers
     void FillPostsList();
     void SetupUiDesign();
     void FillCurentUserDataFields();
+    void FillTrainingLists();
     QPixmap GetProperRankIcon(int points);
     QString GetProperRankName(int points);
 

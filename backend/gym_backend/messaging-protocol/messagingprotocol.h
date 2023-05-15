@@ -47,7 +47,7 @@ public:
 
     // Get all exercise info by exercise id
     static void AcquireGetExerciseData(const json& message, int& outExerciseId);
-    static void BuildGetExerciseDataReply(json& outMessage, const QString& dayOfTheWeek, const QString& exerciseName, int duration);
+    static void BuildGetExerciseDataReply(json& outMessage, const QString& dayOfTheWeek, const QString& exerciseName, float pointsPerHour, int duration);
 };
 
 #endif // MESSAGINGPROTOCOL_H

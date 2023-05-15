@@ -4,6 +4,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QFontMetrics>
+#include <QMenu>
 
 #include "models/frienduser.h"
 
@@ -39,6 +40,10 @@ void MainWindow::SetupUiDesign()
     MakeProfileFieldsNonEdit();
 
     this->setStyleSheet("background-color: white;");
+
+    // signals
+    connect(ui->friendList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnFriendClicked(QListWidgetItem*)));
+    connect(ui->postsList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnPostClicked(QListWidgetItem*)));
 }
 
 void MainWindow::FillCurentUserDataFields()
@@ -110,7 +115,23 @@ void MainWindow::ShowMyProfileSection()
 
 void MainWindow::ShowTrainingSection()
 {
+    ui->traningMondayList->show();
+    ui->traningMondayLabel->show();
+    ui->traningTuesdayList->show();
+    ui->traningTuesdayLabel->show();
+    ui->traningWednesdayList->show();
+    ui->traningWednesdayLabel->show();
+    ui->traningThursdayList->show();
+    ui->traningThursdayLabel->show();
+    ui->traningFridayList->show();
+    ui->traningFridayLabel->show();
+    ui->traningSaturdayList->show();
+    ui->traningSaturdayLabel->show();
+    ui->traningSundayList->show();
+    ui->traningSundayLabel->show();
 
+    this->setWindowTitle("Training program");
+    ui->myTrainingButton->setStyleSheet("QPushButton {border: 1px solid darkgreen; }");
 }
 
 void MainWindow::HidePostsSection()
@@ -127,7 +148,22 @@ void MainWindow::HideMyProfileSection()
 
 void MainWindow::HideTrainingSection()
 {
+    ui->traningMondayList->hide();
+    ui->traningMondayLabel->hide();
+    ui->traningTuesdayList->hide();
+    ui->traningTuesdayLabel->hide();
+    ui->traningWednesdayList->hide();
+    ui->traningWednesdayLabel->hide();
+    ui->traningThursdayList->hide();
+    ui->traningThursdayLabel->hide();
+    ui->traningFridayList->hide();
+    ui->traningFridayLabel->hide();
+    ui->traningSaturdayList->hide();
+    ui->traningSaturdayLabel->hide();
+    ui->traningSundayList->hide();
+    ui->traningSundayLabel->hide();
 
+    ui->myTrainingButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
 }
 
 void MainWindow::MakeProfileFieldsEdit()
@@ -343,6 +379,58 @@ void MainWindow::OnPostClicked(QListWidgetItem* item)
 void MainWindow::BackToMainWindowFromPostSlot()
 {
     mPostWindow->hide();
+}
+
+void MainWindow::FillTrainingLists()
+{
+    ui->traningMondayList->clear();
+    ui->traningTuesdayList->clear();
+    ui->traningWednesdayList->clear();
+    ui->traningThursdayList->clear();
+    ui->traningFridayList->clear();
+    ui->traningSaturdayList->clear();
+    ui->traningSundayList->clear();
+
+    for (const auto& exercise : mExercises)
+    {
+        QString exerciseData = exercise->GetExerciseName() + "\n " + QString::number(exercise->GetDuration()) + " minutes";
+        QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
+
+        if (exercise->GetDayOfTheWeek() == "Monday")
+        {
+            ui->traningMondayList->addItem(newItem);
+        }
+        else if (exercise->GetDayOfTheWeek() == "Tuesday")
+        {
+            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
+            ui->traningTuesdayList->addItem(newItem);
+        }
+        else if (exercise->GetDayOfTheWeek() == "Wednesday")
+        {
+            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
+            ui->traningWednesdayList->addItem(newItem);
+        }
+        else if (exercise->GetDayOfTheWeek() == "Thursday")
+        {
+            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
+            ui->traningThursdayList->addItem(newItem);
+        }
+        else if (exercise->GetDayOfTheWeek() == "Friday")
+        {
+            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
+            ui->traningFridayList->addItem(newItem);
+        }
+        else if (exercise->GetDayOfTheWeek() == "Saturday")
+        {
+            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
+            ui->traningSaturdayList->addItem(newItem);
+        }
+        else if (exercise->GetDayOfTheWeek() == "Sunday")
+        {
+            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
+            ui->traningSundayList->addItem(newItem);
+        }
+    }
 }
 
 

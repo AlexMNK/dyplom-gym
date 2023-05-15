@@ -27,6 +27,8 @@ void MainWindow::PerformGetUserDataOperation()
 
 void MainWindow::PerformGetUserFriendsOperation()
 {
+    mCurrentUser->GetUserFriends().clear(); // clr user friends before assigning again
+
     std::vector<std::pair<int, QString>> userFriends;
 
     json getUserFriends;
@@ -176,6 +178,8 @@ void MainWindow::PerformGetUserExercises()
     }
 
     qDebug() << "number of exercises in a week " << mExercises.size();
+
+    FillTrainingLists();
 }
 
 
