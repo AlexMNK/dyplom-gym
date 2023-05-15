@@ -92,6 +92,8 @@ void MainWindow::on_userEditPicture_clicked()
     ui->userEditProfile->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
     mIsEditProfileButton = true;
     MakeProfileFieldsNonEdit();
+
+    FillPostsList(); // to update icons in posts
 }
 
 

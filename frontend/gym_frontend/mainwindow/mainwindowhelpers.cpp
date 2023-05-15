@@ -190,6 +190,12 @@ void MainWindow::MakeProfileFieldsEdit()
     ui->userSquatEdit->setEnabled(true);
     ui->userDeadliftEdit->setEnabled(true);
 
+    ui->userHeightEdit->setText(QString::number(mCurrentUser->GetUserHeight()));
+    ui->userWeightEdit->setText(QString::number(mCurrentUser->GetUserWeight()));
+    ui->userBenchEdit->setText(QString::number(mCurrentUser->GetUserMaxBench()));
+    ui->userSquatEdit->setText(QString::number(mCurrentUser->GetUserMaxSquat()));
+    ui->userDeadliftEdit->setText(QString::number(mCurrentUser->GetUserMaxDeadlift()));
+
     ui->userSaveProfile->setEnabled(true);
 }
 
@@ -340,9 +346,8 @@ void MainWindow::FillPostsList()
     {
          QListWidgetItem *newItem = new QListWidgetItem;
          newItem->setSizeHint(QSize(620, 50));
-         //newItem->setTextAlignment(Qt::AlignRight);
          newItem->setText(GetFormattedPostmessage(postInstance));
-         newItem->setIcon(QIcon(GetUserImageByPost(postInstance)));
+         newItem->setIcon(QIcon(GetUserImageByPost(postInstance).scaled(QSize(50, 50))));
          ui->postsList->addItem(newItem);
     }
 }
@@ -402,32 +407,26 @@ void MainWindow::FillTrainingLists()
         }
         else if (exercise->GetDayOfTheWeek() == "Tuesday")
         {
-            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
             ui->traningTuesdayList->addItem(newItem);
         }
         else if (exercise->GetDayOfTheWeek() == "Wednesday")
         {
-            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
             ui->traningWednesdayList->addItem(newItem);
         }
         else if (exercise->GetDayOfTheWeek() == "Thursday")
         {
-            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
             ui->traningThursdayList->addItem(newItem);
         }
         else if (exercise->GetDayOfTheWeek() == "Friday")
         {
-            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
             ui->traningFridayList->addItem(newItem);
         }
         else if (exercise->GetDayOfTheWeek() == "Saturday")
         {
-            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
             ui->traningSaturdayList->addItem(newItem);
         }
         else if (exercise->GetDayOfTheWeek() == "Sunday")
         {
-            QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
             ui->traningSundayList->addItem(newItem);
         }
     }

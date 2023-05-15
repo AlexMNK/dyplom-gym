@@ -77,14 +77,19 @@ void MainWindow::PerformUpdateUserImageOperation()
 
     if(image.isNull())
     {
-         QMessageBox::warning(this, "Warning", "Failed to load image");
+         QMessageBox::warning(this, "Warning", "Failed to load image, formats supported: JPEG, PNG");
          return;
     }
 
     QByteArray* byteImage = new QByteArray();
     QBuffer buffer(byteImage);
     buffer.open(QIODevice::WriteOnly);
-    image.save(&buffer, "JPEG");                                    // todo: png
+
+    if (!image.save(&buffer, "JPEG"))
+    {
+        QMessageBox::warning(this, "Warning", "Invalid format of image, formats supported: JPEG, PNG");
+        return;
+    }
 
     int imageSize = byteImage->size();
 
