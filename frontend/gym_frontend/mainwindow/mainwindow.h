@@ -36,6 +36,13 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    enum SectionOpened
+    {
+        Posts = 0,
+        MyProfile,
+        Training,
+    };
+
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -54,14 +61,36 @@ public slots:
 
 private slots:
     void on_signOutButton_clicked();
+    void on_userEditProfile_clicked();
+    void on_userSaveProfile_clicked();
+    void on_userEditPicture_clicked();
 
-private:
+    void on_postsButton_clicked();
+
+    void on_myProfileButton_clicked();
+
+private: // helpers
     QString GetUsernameByPost(UserPost* post);
+    QPixmap GetUserImageByPost(UserPost* post);
+    QString GetFormattedPostmessage(UserPost* post);
     void FillFriendList();
     void CreateFriendWindow();
     void CreatePostWindow();
     void FillPostsList();
     void SetupUiDesign();
+    void FillCurentUserDataFields();
+    QPixmap GetProperRankIcon(int points);
+    QString GetProperRankName(int points);
+
+    void ShowPostsSection();
+    void ShowMyProfileSection();
+    void ShowTrainingSection();
+    void HidePostsSection();
+    void HideMyProfileSection();
+    void HideTrainingSection();
+
+    void MakeProfileFieldsEdit();
+    void MakeProfileFieldsNonEdit();
 
 private: // user operations
     void PerformGetUserDataOperation();
@@ -82,6 +111,10 @@ private:
 
     PostWindow* mPostWindow;
     bool mIsPostWindowCreated{false};
+
+    SectionOpened mCurrentSection{Posts};
+
+    bool mIsEditProfileButton{true};
 };
 
 #endif // MAINWINDOW_H

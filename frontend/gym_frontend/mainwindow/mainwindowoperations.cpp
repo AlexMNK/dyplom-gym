@@ -18,22 +18,11 @@ void MainWindow::PerformGetUserDataOperation()
 
     mCurrentUser->SetUserPicture(&DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize));     // RCV image by parts
 
-    QPixmap pixmap;
-    bool loadImage = pixmap.loadFromData(QByteArray::fromHex(*mCurrentUser->GetUserPicture()));
-
-    if (!loadImage)
-    {
-        QMessageBox::warning(this, "Warning", "Failed to get image data from server");
-    }
-
     const json serverReply = mClientInstance->ReceiveDataFromServer();                                                              // RCV all remaining user data
 
     mCurrentUser->AcquireGetUserDataReply(serverReply);
 
-    // update UI -> todo move to a separate function
-    ui->userImage->setPixmap(pixmap);
-    ui->userName->setText(mCurrentUser->GetUserName());
-    ui->userPoints->setText("Points: " + QString::number(mCurrentUser->GetUserPoints()));
+    FillCurentUserDataFields();
 }
 
 void MainWindow::PerformGetUserFriendsOperation()

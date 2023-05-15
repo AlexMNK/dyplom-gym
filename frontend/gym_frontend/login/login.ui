@@ -189,9 +189,9 @@ QLineEdit { border: 1px solid black }</string>
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>1</y>
       <width>431</width>
-      <height>460</height>
+      <height>459</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -464,6 +464,22 @@ QLineEdit { border: 1px solid black }</string>
     </property>
     <property name="text">
      <string>Repeat the password</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line_4">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>862</width>
+      <height>1</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 0.5px solid black;</string>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
     </property>
    </widget>
   </widget>

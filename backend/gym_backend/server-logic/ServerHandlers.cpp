@@ -11,7 +11,6 @@ typedef bool (*DataPartHandler)(SocketConnection* socketConnection, DBTransport*
 
 // -- Message Handlers -- //
 
-static bool HandleGayOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleAuthorizeOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetUserFriendsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetPostsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
@@ -20,7 +19,6 @@ static bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json&
 
 static std::map<QString, Handler> messageHandlers =
 {
-    {"GAY", &HandleGayOperation},
     {"Authorize", &HandleAuthorizeOperation},
     {"GetUserFriends", &HandleGetUserFriendsOperation},
     {"GetPosts", &HandleGetPostsOperation},
@@ -127,24 +125,14 @@ bool HandleAuthorizeOperation(DBTransport* dbTransport, const json& userMessage,
     return true;
 }
 
-bool HandleGayOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
-{
-    outResultMessage =
-    {
-        {"GAY", "you are gae"},
-    };
-
-    return true;
-}
-
 bool HandleGetUserFriendsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
 {
     int userId;
     std::vector<std::pair<int, QString>> friendIds;
     MessagingProtocol::AcquireGetUserFriends(userMessage, userId);
 
-    auto optionalQuery = dbTransport->ExecuteQuery("SELECT responder_user_id, friends_since FROM Friendships WHERE requester_user_id = " + QString::number(userId) + " AND STATUS = 2 "
-                                                   "UNION SELECT requester_user_id, friends_since FROM Friendships WHERE responder_user_id = " + QString::number(userId) + " AND STATUS = 2");
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT responder_user_id, FORMAT(friends_since,  'dd/MM/yyyy, hh:mm:ss ') FROM Friendships WHERE requester_user_id = " + QString::number(userId) + " AND STATUS = 2 "
+                                                   "UNION SELECT requester_user_id, FORMAT(friends_since,  'dd/MM/yyyy, hh:mm:ss ') FROM Friendships WHERE responder_user_id = " + QString::number(userId) + " AND STATUS = 2");
     if (optionalQuery)
     {
         QSqlQuery query(std::move(optionalQuery.value()));
@@ -343,17 +331,17 @@ bool HandleGetPostDataOperation(SocketConnection* socketConnection, DBTransport*
     int postId;
     MessagingProtocol::AcquireGetPostData(userMessage, postId);
 
-    auto optionalQuery = dbTransport->ExecuteQuery("SELECT * from Posts WHERE id = " + QString::number(postId));
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT post_user_id, post_text, FORMAT(post_time,  'dd/MM/yyyy, hh:mm:ss '), post_picture from Posts WHERE id = " + QString::number(postId));
     if (optionalQuery)
     {
         QSqlQuery query(std::move(optionalQuery.value()));
 
         if (DBHelper::GetNextQueryResultRow(query))
         {
-            int postUserId = DBHelper::GetQueryData(query, 1).toInt();
-            QString postText = DBHelper::GetQueryData(query, 2).toString();
-            QString postTime = DBHelper::GetQueryData(query, 3).toString();
-            int postPictureId = DBHelper::GetQueryData(query, 4).toInt();
+            int postUserId = DBHelper::GetQueryData(query, 0).toInt();
+            QString postText = DBHelper::GetQueryData(query, 1).toString();
+            QString postTime = DBHelper::GetQueryData(query, 2).toString();
+            int postPictureId = DBHelper::GetQueryData(query, 3).toInt();
 
             auto optionalQuery2 = dbTransport->ExecuteQuery("SELECT image from Images WHERE id = " + QString::number(postPictureId));
             if (optionalQuery2)

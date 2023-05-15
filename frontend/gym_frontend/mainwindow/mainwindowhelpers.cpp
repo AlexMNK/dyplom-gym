@@ -3,26 +3,185 @@
 
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QFontMetrics>
 
 #include "models/frienduser.h"
 
 
 void MainWindow::SetupUiDesign()
 {
+    // side buttons
+    ui->myTrainingButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->myProfileButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->postsButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->addPostButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->signOutButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkred;}");
+
+    // my profile fields
+    ui->userNameLabel->setStyleSheet("border: none;");
+    ui->userHashLabel->setStyleSheet("border: none;");
+    ui->userEmailLabel->setStyleSheet("border: none;");
+    ui->userPassLabel->setStyleSheet("border: none;");
+    ui->userPointsLabel->setStyleSheet("border: none;");
+    ui->userRankLabel->setStyleSheet("border: none;");
+    ui->userRankProfile->setStyleSheet("border: none;");
+    ui->userHeightLabel->setStyleSheet("border: none;");
+    ui->userWeightLabel->setStyleSheet("border: none;");
+    ui->userAgeLabel->setStyleSheet("border: none;");
+    ui->userBenchLabel->setStyleSheet("border: none;");
+    ui->userSquatLabel->setStyleSheet("border: none;");
+    ui->userDeadliftLabel->setStyleSheet("border: none;");
+
+    ui->userEditPicture->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->userEditProfile->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->userSaveProfile->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+
+    MakeProfileFieldsNonEdit();
+
     this->setStyleSheet("background-color: white;");
 }
 
-QString MainWindow::GetUsernameByPost(UserPost* post)
+void MainWindow::FillCurentUserDataFields()
 {
-    const FriendUser* friendUser = mCurrentUser->GetFriendById(post->GetPostUserId());
-    if (friendUser != nullptr)
+    QPixmap pixmap;
+    bool loadImage = pixmap.loadFromData(QByteArray::fromHex(*mCurrentUser->GetUserPicture()));
+
+    if (!loadImage)
     {
-        return friendUser->GetUserName();
+        QMessageBox::warning(this, "Warning", "Failed to get image data from server");
     }
-    else
-    {
-        return "Me"; // case when post was written by me;
-    }
+
+    // side panel
+    ui->userImage->setPixmap(pixmap);
+    ui->userRankImage->setPixmap(GetProperRankIcon(mCurrentUser->GetUserPoints()));
+    ui->userName->setText(mCurrentUser->GetUserName());
+    ui->userPoints->setText("Points: " + QString::number(mCurrentUser->GetUserPoints()));
+
+    // my profile
+    ui->userProfilePicture->setPixmap(pixmap);
+    ui->userRankProfile->setPixmap(GetProperRankIcon(mCurrentUser->GetUserPoints()));
+    ui->userNameEdit->setText(mCurrentUser->GetUserName());
+    ui->userHashEdit->setText(mCurrentUser->GetUserHashtag());
+    ui->userEmailEdit->setText(mCurrentUser->GetUserEmail());
+    ui->userPasswordEdit->setText(mCurrentUser->GetUserPassword());
+    ui->userPointsLabel->setText("Points: " + QString::number(mCurrentUser->GetUserPoints()));
+    ui->userRankLabel->setText("Rank: " + GetProperRankName(mCurrentUser->GetUserPoints()));
+    ui->userHeightEdit->setText(QString::number(mCurrentUser->GetUserHeight()) + " sm");
+    ui->userWeightEdit->setText(QString::number(mCurrentUser->GetUserWeight()) + " kg");
+    ui->userAgeEdit->setText(QString::number(mCurrentUser->GetUserAge()));
+    ui->userBenchEdit->setText(mCurrentUser->GetUserMaxBench() != 0 ? QString::number(mCurrentUser->GetUserMaxBench()) + " kg" : "Not stated");
+    ui->userSquatEdit->setText(mCurrentUser->GetUserMaxSquat() != 0 ? QString::number(mCurrentUser->GetUserMaxSquat()) + " kg" : "Not stated");
+    ui->userDeadliftEdit->setText(mCurrentUser->GetUserMaxDeadlift() != 0 ? QString::number(mCurrentUser->GetUserMaxDeadlift()) + " kg" : "Not stated");
+}
+
+QPixmap MainWindow::GetProperRankIcon(int points)
+{
+    if (points < 2000) return QPixmap(":/ranks/ranks/silver.png");
+    if (points < 5000) return QPixmap(":/ranks/ranks/gold.png");
+    if (points < 10000) return QPixmap(":/ranks/ranks/platinum.png");
+    if (points < 20000) return QPixmap(":/ranks/ranks/diamond.png");
+    // else it is immortal
+    return QPixmap(":/ranks/ranks/immortal.png");
+}
+
+QString MainWindow::GetProperRankName(int points)
+{
+    if (points < 2000) return "Silver";
+    if (points < 5000) return "Gold";
+    if (points < 10000) return "Platinum";
+    if (points < 20000) return "Diamond";
+    // else it is immortal
+    return "Imoortal";
+}
+
+void MainWindow::ShowPostsSection()
+{
+    ui->postsList->show();
+    this->setWindowTitle("Posts");
+    ui->postsButton->setStyleSheet("QPushButton {border: 1px solid darkgreen; }");
+}
+
+void MainWindow::ShowMyProfileSection()
+{
+    ui->userProfileFrame->show();
+    this->setWindowTitle("My profile");
+    ui->myProfileButton->setStyleSheet("QPushButton {border: 1px solid darkgreen; }");
+}
+
+void MainWindow::ShowTrainingSection()
+{
+
+}
+
+void MainWindow::HidePostsSection()
+{
+    ui->postsList->hide();
+    ui->postsButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+}
+
+void MainWindow::HideMyProfileSection()
+{
+    ui->userProfileFrame->hide();
+    ui->myProfileButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+}
+
+void MainWindow::HideTrainingSection()
+{
+
+}
+
+void MainWindow::MakeProfileFieldsEdit()
+{
+    ui->userNameEdit->setStyleSheet("border: 1px solid black;");
+    ui->userHashEdit->setStyleSheet("border: 1px solid black;");
+    ui->userEmailEdit->setStyleSheet("border: 1px solid black;");
+    ui->userPasswordEdit->setStyleSheet("border: 1px solid black;");
+    ui->userHeightEdit->setStyleSheet("border: 1px solid black;");
+    ui->userWeightEdit->setStyleSheet("border: 1px solid black;");
+    ui->userAgeEdit->setStyleSheet("border: 1px solid black;");
+    ui->userBenchEdit->setStyleSheet("border: 1px solid black;");
+    ui->userSquatEdit->setStyleSheet("border: 1px solid black;");
+    ui->userDeadliftEdit->setStyleSheet("border: 1px solid black");
+
+    ui->userNameEdit->setEnabled(true);
+    ui->userHashEdit->setEnabled(true);
+    ui->userEmailEdit->setEnabled(true);
+    ui->userPasswordEdit->setEnabled(true);
+    ui->userHeightEdit->setEnabled(true);
+    ui->userWeightEdit->setEnabled(true);
+    ui->userAgeEdit->setEnabled(true);
+    ui->userBenchEdit->setEnabled(true);
+    ui->userSquatEdit->setEnabled(true);
+    ui->userDeadliftEdit->setEnabled(true);
+
+    ui->userSaveProfile->setEnabled(true);
+}
+
+void MainWindow::MakeProfileFieldsNonEdit()
+{
+    ui->userNameEdit->setStyleSheet("border: none;");
+    ui->userHashEdit->setStyleSheet("border: none;");
+    ui->userEmailEdit->setStyleSheet("border: none;");
+    ui->userPasswordEdit->setStyleSheet("border: none;");
+    ui->userHeightEdit->setStyleSheet("border: none;");
+    ui->userWeightEdit->setStyleSheet("border: none;");
+    ui->userAgeEdit->setStyleSheet("border: none;");
+    ui->userBenchEdit->setStyleSheet("border: none;");
+    ui->userSquatEdit->setStyleSheet("border: none;");
+    ui->userDeadliftEdit->setStyleSheet("border: none;");
+
+    ui->userNameEdit->setEnabled(false);
+    ui->userHashEdit->setEnabled(false);
+    ui->userEmailEdit->setEnabled(false);
+    ui->userPasswordEdit->setEnabled(false);
+    ui->userHeightEdit->setEnabled(false);
+    ui->userWeightEdit->setEnabled(false);
+    ui->userAgeEdit->setEnabled(false);
+    ui->userBenchEdit->setEnabled(false);
+    ui->userSquatEdit->setEnabled(false);
+    ui->userDeadliftEdit->setEnabled(false);
+
+    ui->userSaveProfile->setEnabled(false);
 }
 
 void MainWindow::FillFriendList()
@@ -78,12 +237,64 @@ void MainWindow::OnFriendClicked(QListWidgetItem* item)
     mFriendWindow->show();
 }
 
-void MainWindow::BackToMainWindowFromFriendSlot()
+QString MainWindow::GetUsernameByPost(UserPost* post)
 {
-    mFriendWindow->hide();
-    mClientInstance->SetCurrentWindow(this);
+    const FriendUser* friendUser = mCurrentUser->GetFriendById(post->GetPostUserId());
+    if (friendUser != nullptr)
+    {
+        return friendUser->GetUserName();
+    }
+    else
+    {
+        return "Me"; // case when post was written by me;
+    }
 }
 
+QPixmap MainWindow::GetUserImageByPost(UserPost* post)
+{
+    QPixmap pixmap;
+
+    const FriendUser* friendUser = mCurrentUser->GetFriendById(post->GetPostUserId());
+    if (friendUser != nullptr)
+    {
+        pixmap.loadFromData(QByteArray::fromHex(*friendUser->GetUserPicture()));
+    }
+    else
+    {
+         pixmap.loadFromData(QByteArray::fromHex(*mCurrentUser->GetUserPicture())); // case when post was written by me;
+    }
+
+    return pixmap;
+}
+
+QString MainWindow::GetFormattedPostmessage(UserPost* post)
+{
+    // TODO - improve this function - add * days ago -> if more than some limit - show date
+
+    QString message = GetUsernameByPost(post) + ": " + post->GetPostText();
+
+    if (message.size() > 55)
+    {
+        message.truncate(50);
+        message.append("...");
+    }
+    else
+    {
+        message = message.leftJustified(55, ' ');
+        QFont font("Times New Roman", 16);
+        QFontMetrics fm(font);
+        int pixelsWide = fm.horizontalAdvance(message);
+
+        while(pixelsWide < 390)
+        {
+            pixelsWide = fm.horizontalAdvance(message.append(" "));
+        }
+    }
+
+    message.append(post->GetPostTime().sliced(0, 17));
+
+    return message;
+}
 
 void MainWindow::FillPostsList()
 {
@@ -92,9 +303,18 @@ void MainWindow::FillPostsList()
     for (const auto& postInstance : mPosts)
     {
          QListWidgetItem *newItem = new QListWidgetItem;
-         newItem->setText(GetUsernameByPost(postInstance) + ": " + postInstance->GetPostText() + "  " + postInstance->GetPostTime());
+         newItem->setSizeHint(QSize(620, 50));
+         //newItem->setTextAlignment(Qt::AlignRight);
+         newItem->setText(GetFormattedPostmessage(postInstance));
+         newItem->setIcon(QIcon(GetUserImageByPost(postInstance)));
          ui->postsList->addItem(newItem);
     }
+}
+
+void MainWindow::BackToMainWindowFromFriendSlot()
+{
+    mFriendWindow->hide();
+    mClientInstance->SetCurrentWindow(this);
 }
 
 void MainWindow::CreatePostWindow()

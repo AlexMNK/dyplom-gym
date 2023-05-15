@@ -24,7 +24,7 @@ void Login::SetupUiDesign()
 
 void Login::ShowLogIn(QString userName, QString userPassword)
 {
-    ui->backgroundLabel->move(0, 0);
+    ui->backgroundLabel->move(0, 1);
     ui->user_name->setText(userName);
     ui->user_password->setText(userPassword);
 
@@ -59,7 +59,7 @@ void Login::ShowLogIn(QString userName, QString userPassword)
 
 void Login::ShowSignUp()
 {
-    ui->backgroundLabel->move(432, 0);
+    ui->backgroundLabel->move(432, 1);
 
     ui->user_name->hide();
     ui->user_password->hide();
