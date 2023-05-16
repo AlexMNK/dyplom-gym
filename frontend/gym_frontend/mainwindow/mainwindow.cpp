@@ -20,8 +20,31 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete mCurrentUser;
-    delete mFriendWindow;
-    delete mPostWindow;
+
+    if (mIsFriendWindowCreated)
+    {
+       delete mFriendWindow;
+    }
+
+    if (mIsPostWindowCreated)
+    {
+        delete mPostWindow;
+    }
+
+    if (mIsExerciseWindowCreated)
+    {
+        delete mExerciseWindow;
+    }
+
+    if (mIsAddExerciseWindowCreated)
+    {
+        delete mAddExerciseWindow;
+    }
+
+    if (mIsAddPostWindowCreated)
+    {
+        delete mAddPostWindow;
+    }
 
     for (const auto& post : mPosts)
     {
@@ -121,5 +144,62 @@ void MainWindow::on_myTrainingButton_clicked()
     HidePostsSection();
 
     ShowTrainingSection();
+}
+
+void MainWindow::on_trainingAddMonday_clicked()
+{
+    CreateAddExerciseWindow();
+    emit OpenAddExerciseWindow(mClientInstance, mCurrentUser->GetUserId(), "Monday");
+    mAddExerciseWindow->show();
+}
+
+void MainWindow::on_trainingAddTuesday_clicked()
+{
+    CreateAddExerciseWindow();
+    emit OpenAddExerciseWindow(mClientInstance, mCurrentUser->GetUserId(), "Tuesday");
+    mAddExerciseWindow->show();
+}
+
+void MainWindow::on_trainingAddWednesday_clicked()
+{
+    CreateAddExerciseWindow();
+    emit OpenAddExerciseWindow(mClientInstance, mCurrentUser->GetUserId(), "Wednesday");
+    mAddExerciseWindow->show();
+}
+
+void MainWindow::on_trainingAddThursday_clicked()
+{
+    CreateAddExerciseWindow();
+    emit OpenAddExerciseWindow(mClientInstance, mCurrentUser->GetUserId(), "Thursday");
+    mAddExerciseWindow->show();
+}
+
+void MainWindow::on_trainingAddFriday_clicked()
+{
+    CreateAddExerciseWindow();
+    emit OpenAddExerciseWindow(mClientInstance, mCurrentUser->GetUserId(), "Friday");
+    mAddExerciseWindow->show();
+}
+
+void MainWindow::on_trainingAddSaturday_clicked()
+{
+    CreateAddExerciseWindow();
+    emit OpenAddExerciseWindow(mClientInstance, mCurrentUser->GetUserId(), "Saturday");
+    mAddExerciseWindow->show();
+}
+
+void MainWindow::on_trainingAddSunday_clicked()
+{
+    CreateAddExerciseWindow();
+    emit OpenAddExerciseWindow(mClientInstance, mCurrentUser->GetUserId(), "Sunday");
+    mAddExerciseWindow->show();
+}
+
+
+void MainWindow::on_addPostButton_clicked()
+{
+    CreateAddPostWindow();
+    emit OpenAddPostWindow(mClientInstance, mCurrentUser->GetUserId());
+    mAddPostWindow->show();
 }
 

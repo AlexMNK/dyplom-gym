@@ -15,6 +15,9 @@
 #include "models/userpost.h"
 #include "postwindow/postwindow.h"
 #include "models/exercise.h"
+#include "exercisewindow/exercisewindow.h"
+#include "exercisewindow/addexercise.h"
+#include "postwindow/addpostwindow.h"
 
 #include <QMainWindow>
 
@@ -51,13 +54,27 @@ signals:
     void BackToAuthorization();
     void OpenFriendWindow(Client* clientInstance, MainUser* mainUser, FriendUser* friendUser);
     void OpenPostWindow(UserPost* userPost, QString userName);
+    void OpenExerciseWindow(Client* clientInstance, Exercise* exercise);
+    void OpenAddExerciseWindow(Client* clientInstance, int userId, QString dayOfTheWeek);
+    void OpenAddPostWindow(Client* clientInstance, int userId);
 
 public slots:
     void AuthorizationSuccess(Client* clientInstance, int userId);
     void OnFriendClicked(QListWidgetItem* item);
     void OnPostClicked(QListWidgetItem* item);
+    void OnMondayExerciseClicked(QListWidgetItem* item);
+    void OnTuesdayExerciseClicked(QListWidgetItem* item);
+    void OnWednesdayExerciseClicked(QListWidgetItem* item);
+    void OnThursdayExerciseClicked(QListWidgetItem* item);
+    void OnFridayExerciseClicked(QListWidgetItem* item);
+    void OnSaturdayExerciseClicked(QListWidgetItem* item);
+    void OnSundayExerciseClicked(QListWidgetItem* item);
+
     void BackToMainWindowFromFriendSlot();
     void BackToMainWindowFromPostSlot();
+    void BackToMainWindowFromExerciseSlot();
+    void BackToMainWindowFromAddExerciseSlot();
+    void BackToMainWindowFromAddPostSlot();
 
 private slots:
     void on_signOutButton_clicked();
@@ -67,6 +84,15 @@ private slots:
     void on_postsButton_clicked();
     void on_myProfileButton_clicked();
     void on_myTrainingButton_clicked();
+    void on_trainingAddMonday_clicked();
+    void on_trainingAddTuesday_clicked();
+    void on_trainingAddWednesday_clicked();
+    void on_trainingAddThursday_clicked();
+    void on_trainingAddFriday_clicked();
+    void on_trainingAddSaturday_clicked();
+    void on_trainingAddSunday_clicked();
+
+    void on_addPostButton_clicked();
 
 private: // helpers
     QString GetUsernameByPost(UserPost* post);
@@ -75,12 +101,16 @@ private: // helpers
     void FillFriendList();
     void CreateFriendWindow();
     void CreatePostWindow();
+    void CreateExerciseWindow();
+    void CreateAddExerciseWindow();
+    void CreateAddPostWindow();
     void FillPostsList();
     void SetupUiDesign();
     void FillCurentUserDataFields();
     void FillTrainingLists();
     QPixmap GetProperRankIcon(int points);
     QString GetProperRankName(int points);
+    void ShowExerciseWindowDependingOnDay(int index, QString dayOfTheWeek);
 
     void ShowPostsSection();
     void ShowMyProfileSection();
@@ -111,6 +141,15 @@ private:
 
     PostWindow* mPostWindow;
     bool mIsPostWindowCreated{false};
+
+    ExerciseWindow* mExerciseWindow;
+    bool mIsExerciseWindowCreated{false};
+
+    AddExercise* mAddExerciseWindow;
+    bool mIsAddExerciseWindowCreated{false};
+
+    AddPostWindow* mAddPostWindow;
+    bool mIsAddPostWindowCreated{false};
 
     SectionOpened mCurrentSection{Posts};
 

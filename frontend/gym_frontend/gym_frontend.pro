@@ -13,6 +13,8 @@ INCLUDEPATH += C:\Users\alex2\Desktop\dyplom\mINI\src
 
 SOURCES += \
     client-logic/client.cpp \
+    exercisewindow/addexercise.cpp \
+    exercisewindow/exercisewindow.cpp \
     friendwindow/friendwindow.cpp \
     login/loginhelpers.cpp \
     login/loginoperations.cpp \
@@ -26,11 +28,14 @@ SOURCES += \
     models/frienduser.cpp \
     models/mainuser.cpp \
     models/userpost.cpp \
+    postwindow/addpostwindow.cpp \
     postwindow/postwindow.cpp \
     transport/socketconnection.cpp
 
 HEADERS += \
     client-logic/client.h \
+    exercisewindow/addexercise.h \
+    exercisewindow/exercisewindow.h \
     friendwindow/friendwindow.h \
     login/login.h \
     mainwindow/mainwindow.h \
@@ -40,6 +45,7 @@ HEADERS += \
     models/frienduser.h \
     models/mainuser.h \
     models/userpost.h \
+    postwindow/addpostwindow.h \
     postwindow/postwindow.h \
     transport/socketconnection.h \
     utils/DataPartImageHelper.hpp \
@@ -47,9 +53,12 @@ HEADERS += \
     utils/QByteArrayConverter.hpp
 
 FORMS += \
+    exercisewindow/addexercise.ui \
+    exercisewindow/exercisewindow.ui \
     friendwindow/friendwindow.ui \
     login/login.ui \
     mainwindow/mainwindow.ui \
+    postwindow/addpostwindow.ui \
     postwindow/postwindow.ui
 
 # Default rules for deployment.

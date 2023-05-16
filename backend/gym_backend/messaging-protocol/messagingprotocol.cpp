@@ -177,3 +177,19 @@ void MessagingProtocol::BuildGetExerciseDataReply(json& outMessage, const QStrin
     };
 }
 
+//
+void MessagingProtocol::BuildGetAllExercisesReply(json& outMessage, const std::vector<QString> exercises)
+{
+    json exercisesArray;
+
+    for (const auto& exercise : exercises)
+    {
+        exercisesArray.push_back(exercise.toStdString());
+    }
+
+    outMessage =
+    {
+        {"Exercises", exercisesArray},
+    };
+}
+

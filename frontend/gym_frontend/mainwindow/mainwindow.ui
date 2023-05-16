@@ -416,7 +416,7 @@ QLineEdit { border: 1px solid black }</string>
    <widget class="QLabel" name="traningSundayLabel">
     <property name="geometry">
      <rect>
-      <x>737</x>
+      <x>713</x>
       <y>310</y>
       <width>56</width>
       <height>21</height>
@@ -438,7 +438,7 @@ QLineEdit { border: 1px solid black }</string>
    <widget class="QLabel" name="traningWednesdayLabel">
     <property name="geometry">
      <rect>
-      <x>640</x>
+      <x>618</x>
       <y>30</y>
       <width>81</width>
       <height>21</height>
@@ -460,7 +460,7 @@ QLineEdit { border: 1px solid black }</string>
    <widget class="QLabel" name="traningSaturdayLabel">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>549</x>
       <y>310</y>
       <width>63</width>
       <height>21</height>
@@ -1140,7 +1140,7 @@ QListWidget::item:selected  {
    <widget class="QLabel" name="traningFridayLabel">
     <property name="geometry">
      <rect>
-      <x>416</x>
+      <x>395</x>
       <y>310</y>
       <width>49</width>
       <height>21</height>
@@ -1232,7 +1232,7 @@ QListWidget::item:selected  {
    <widget class="QLabel" name="traningThursdayLabel">
     <property name="geometry">
      <rect>
-      <x>814</x>
+      <x>788</x>
       <y>30</y>
       <width>64</width>
       <height>21</height>
@@ -1254,7 +1254,7 @@ QListWidget::item:selected  {
    <widget class="QLabel" name="traningMondayLabel">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>308</x>
       <y>30</y>
       <width>61</width>
       <height>21</height>
@@ -1311,7 +1311,7 @@ QListWidget::item:selected  {
    <widget class="QLabel" name="traningTuesdayLabel">
     <property name="geometry">
      <rect>
-      <x>495</x>
+      <x>467</x>
       <y>30</y>
       <width>61</width>
       <height>21</height>
@@ -1328,6 +1328,181 @@ QListWidget::item:selected  {
     </property>
     <property name="text">
      <string>Tuesday</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="trainingAddMonday">
+    <property name="geometry">
+     <rect>
+      <x>368</x>
+      <y>30</y>
+      <width>49</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:black; border: 1px solid black;</string>
+    </property>
+    <property name="text">
+     <string>Add</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="trainingAddTuesday">
+    <property name="geometry">
+     <rect>
+      <x>527</x>
+      <y>30</y>
+      <width>49</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:black; border: 1px solid black;</string>
+    </property>
+    <property name="text">
+     <string>Add</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="trainingAddWednesday">
+    <property name="geometry">
+     <rect>
+      <x>698</x>
+      <y>30</y>
+      <width>49</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:black; border: 1px solid black;</string>
+    </property>
+    <property name="text">
+     <string>Add</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="trainingAddThursday">
+    <property name="geometry">
+     <rect>
+      <x>851</x>
+      <y>30</y>
+      <width>49</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:black; border: 1px solid black;</string>
+    </property>
+    <property name="text">
+     <string>Add</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="trainingAddFriday">
+    <property name="geometry">
+     <rect>
+      <x>443</x>
+      <y>310</y>
+      <width>49</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:black; border: 1px solid black;</string>
+    </property>
+    <property name="text">
+     <string>Add</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="trainingAddSaturday">
+    <property name="geometry">
+     <rect>
+      <x>611</x>
+      <y>310</y>
+      <width>49</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:black; border: 1px solid black;</string>
+    </property>
+    <property name="text">
+     <string>Add</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="trainingAddSunday">
+    <property name="geometry">
+     <rect>
+      <x>768</x>
+      <y>310</y>
+      <width>49</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:black; border: 1px solid black;</string>
+    </property>
+    <property name="text">
+     <string>Add</string>
     </property>
    </widget>
   </widget>

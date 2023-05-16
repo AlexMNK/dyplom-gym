@@ -48,6 +48,10 @@ public:
     // Get all exercise info by exercise id
     static void AcquireGetExerciseData(const json& message, int& outExerciseId);
     static void BuildGetExerciseDataReply(json& outMessage, const QString& dayOfTheWeek, const QString& exerciseName, float pointsPerHour, int duration);
+
+    // Get all available exercises
+    // no acquire
+    static void BuildGetAllExercisesReply(json& outMessage, const std::vector<QString> exercises);
 };
 
 #endif // MESSAGINGPROTOCOL_H

@@ -171,6 +171,26 @@ void MessagingProtocol::AcquireGetExerciseDataReply(const json& message, QString
     outDuration = message["Duration"];
 }
 
+//
+void MessagingProtocol::BuildGetAllExercises(json& outMessage)
+{
+    outMessage =
+    {
+        {"Operation", "GetAllExercises"},
+    };
+}
+
+void MessagingProtocol::AcquireGetAllExercisesReply(const json& message, std::vector<QString>& outExercises)
+{
+    int size = message["Exercises"].size();
+
+    for(int i = 0; i < size; ++i)
+    {
+        outExercises.push_back(QString::fromStdString(message["Exercises"][i]));
+    }
+}
+
+
 
 
 

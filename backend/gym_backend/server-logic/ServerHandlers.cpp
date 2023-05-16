@@ -16,6 +16,7 @@ static bool HandleGetUserFriendsOperation(DBTransport* dbTransport, const json& 
 static bool HandleGetPostsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetUserExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleGetAllExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
@@ -24,6 +25,7 @@ static std::map<QString, Handler> messageHandlers =
     {"GetPosts", &HandleGetPostsOperation},
     {"GetUserExercises", &HandleGetUserExercisesOperation},
     {"GetExerciseData", &HandleGetExerciseDataOperation},
+    {"GetAllExercises", &HandleGetAllExercisesOperation},
 };
 
 // -- Data part handlers -- //
@@ -225,6 +227,28 @@ bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMe
 
             return true;
         }
+    }
+
+    return false;
+}
+
+bool HandleGetAllExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    std::vector<QString> allExercises;
+
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT exercise_name from Exercises");
+    if (optionalQuery)
+    {
+        QSqlQuery query(std::move(optionalQuery.value()));
+
+        while (DBHelper::GetNextQueryResultRow(query))
+        {
+            allExercises.push_back((DBHelper::GetQueryData(query, 0).toString()));
+        }
+
+        MessagingProtocol::BuildGetAllExercisesReply(outResultMessage, allExercises);
+
+        return true;
     }
 
     return false;

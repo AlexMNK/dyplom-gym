@@ -41,9 +41,26 @@ void MainWindow::SetupUiDesign()
 
     this->setStyleSheet("background-color: white;");
 
+    //exercises
+    ui->trainingAddMonday->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->trainingAddTuesday->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->trainingAddWednesday->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->trainingAddThursday->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->trainingAddFriday->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->trainingAddSaturday->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+    ui->trainingAddSunday->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+
     // signals
     connect(ui->friendList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnFriendClicked(QListWidgetItem*)));
     connect(ui->postsList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnPostClicked(QListWidgetItem*)));
+
+    connect(ui->traningMondayList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnMondayExerciseClicked(QListWidgetItem*)));
+    connect(ui->traningTuesdayList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnTuesdayExerciseClicked(QListWidgetItem*)));
+    connect(ui->traningWednesdayList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnWednesdayExerciseClicked(QListWidgetItem*)));
+    connect(ui->traningThursdayList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnThursdayExerciseClicked(QListWidgetItem*)));
+    connect(ui->traningFridayList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnFridayExerciseClicked(QListWidgetItem*)));
+    connect(ui->traningSaturdayList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnSaturdayExerciseClicked(QListWidgetItem*)));
+    connect(ui->traningSundayList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnSundayExerciseClicked(QListWidgetItem*)));
 }
 
 void MainWindow::FillCurentUserDataFields()
@@ -130,6 +147,14 @@ void MainWindow::ShowTrainingSection()
     ui->traningSundayList->show();
     ui->traningSundayLabel->show();
 
+    ui->trainingAddMonday->show();
+    ui->trainingAddTuesday->show();
+    ui->trainingAddWednesday->show();
+    ui->trainingAddThursday->show();
+    ui->trainingAddFriday->show();
+    ui->trainingAddSaturday->show();
+    ui->trainingAddSunday->show();
+
     this->setWindowTitle("Training program");
     ui->myTrainingButton->setStyleSheet("QPushButton {border: 1px solid darkgreen; }");
 }
@@ -162,6 +187,14 @@ void MainWindow::HideTrainingSection()
     ui->traningSaturdayLabel->hide();
     ui->traningSundayList->hide();
     ui->traningSundayLabel->hide();
+
+    ui->trainingAddMonday->hide();
+    ui->trainingAddTuesday->hide();
+    ui->trainingAddWednesday->hide();
+    ui->trainingAddThursday->hide();
+    ui->trainingAddFriday->hide();
+    ui->trainingAddSaturday->hide();
+    ui->trainingAddSunday->hide();
 
     ui->myTrainingButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
 }
@@ -279,6 +312,23 @@ void MainWindow::OnFriendClicked(QListWidgetItem* item)
     mFriendWindow->show();
 }
 
+void MainWindow::CreateAddPostWindow()
+{
+    if (!mIsAddPostWindowCreated)
+    {
+        this->mAddPostWindow = new AddPostWindow();
+        connect(this, &MainWindow::OpenAddPostWindow, mAddPostWindow, &AddPostWindow::AddPostWindowOpened);
+        connect(mAddPostWindow, SIGNAL(BackToMainWindow()), this, SLOT(BackToMainWindowFromAddPostSlot()));
+        mIsAddPostWindowCreated = true;
+    }
+}
+
+void MainWindow::BackToMainWindowFromAddPostSlot()
+{
+    mAddPostWindow->hide();
+    mClientInstance->SetCurrentWindow(this);
+}
+
 QString MainWindow::GetUsernameByPost(UserPost* post)
 {
     const FriendUser* friendUser = mCurrentUser->GetFriendById(post->GetPostUserId());
@@ -355,6 +405,101 @@ void MainWindow::FillPostsList()
 void MainWindow::BackToMainWindowFromFriendSlot()
 {
     mFriendWindow->hide();
+    mClientInstance->SetCurrentWindow(this);
+}
+
+void MainWindow::CreateExerciseWindow()
+{
+    if (!mIsExerciseWindowCreated)
+    {
+        this->mExerciseWindow = new ExerciseWindow();
+        connect(this, &MainWindow::OpenExerciseWindow, mExerciseWindow, &ExerciseWindow::ExerciseWindowOpened);
+        connect(mExerciseWindow, SIGNAL(BackToMainWindow()), this, SLOT(BackToMainWindowFromExerciseSlot()));
+        mIsExerciseWindowCreated = true;
+    }
+}
+
+void MainWindow::ShowExerciseWindowDependingOnDay(int index, QString dayOfTheWeek)
+{
+    CreateExerciseWindow();
+
+    Exercise* currentExercise = nullptr;
+    for(const auto& exercise: mExercises)
+    {
+        if (exercise->GetDayOfTheWeek() == dayOfTheWeek)
+        {
+            if (index == 0)
+            {
+                currentExercise = exercise;
+                break;
+            }
+            else
+            {
+                index--;
+            }
+        }
+    }
+
+    emit OpenExerciseWindow(mClientInstance, currentExercise);
+
+    mExerciseWindow->show();
+}
+
+void MainWindow::OnMondayExerciseClicked(QListWidgetItem* item)
+{
+    ShowExerciseWindowDependingOnDay(ui->traningMondayList->row(item), "Monday");
+}
+
+void MainWindow::OnTuesdayExerciseClicked(QListWidgetItem* item)
+{
+    ShowExerciseWindowDependingOnDay(ui->traningTuesdayList->row(item), "Tuesday");
+}
+
+void MainWindow::OnWednesdayExerciseClicked(QListWidgetItem* item)
+{
+    ShowExerciseWindowDependingOnDay(ui->traningWednesdayList->row(item), "Wednesday");
+}
+
+void MainWindow::OnThursdayExerciseClicked(QListWidgetItem* item)
+{
+    ShowExerciseWindowDependingOnDay(ui->traningThursdayList->row(item), "Thursday");
+}
+
+void MainWindow::OnFridayExerciseClicked(QListWidgetItem* item)
+{
+    ShowExerciseWindowDependingOnDay(ui->traningFridayList->row(item), "Friday");
+}
+
+void MainWindow::OnSaturdayExerciseClicked(QListWidgetItem* item)
+{
+    ShowExerciseWindowDependingOnDay(ui->traningSaturdayList->row(item), "Saturday");
+}
+
+void MainWindow::OnSundayExerciseClicked(QListWidgetItem* item)
+{
+    ShowExerciseWindowDependingOnDay(ui->traningSundayList->row(item), "Sunday");
+}
+
+void MainWindow::BackToMainWindowFromExerciseSlot()
+{
+    mExerciseWindow->hide();
+    mClientInstance->SetCurrentWindow(this);
+}
+
+void MainWindow::CreateAddExerciseWindow()
+{
+    if (!mIsAddExerciseWindowCreated)
+    {
+        this->mAddExerciseWindow = new AddExercise();
+        connect(this, &MainWindow::OpenAddExerciseWindow, mAddExerciseWindow, &AddExercise::AddExerciseWindowOpened);
+        connect(mAddExerciseWindow, SIGNAL(BackToMainWindow()), this, SLOT(BackToMainWindowFromAddExerciseSlot()));
+        mIsAddExerciseWindowCreated = true;
+    }
+}
+
+void MainWindow::BackToMainWindowFromAddExerciseSlot()
+{
+    mAddExerciseWindow->hide();
     mClientInstance->SetCurrentWindow(this);
 }
 
