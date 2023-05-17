@@ -11,7 +11,22 @@ Exercise::Exercise(int userId, int exerciseId)
 
 void Exercise::AcquireGetExerciseDataReply(const json& message)
 {
-    MessagingProtocol::AcquireGetExerciseDataReply(message, mDayOfTheWeek, mExerciseName, mPointsPerHour, mDuration);
+    QString exerciseStatus;
 
-    qDebug() << "Got exercise " << mExerciseName << " on " << mDayOfTheWeek << " with duration " << mDuration << "and points " << mPointsPerHour;
+    MessagingProtocol::AcquireGetExerciseDataReply(message, mDayOfTheWeek, mExerciseName, exerciseStatus, mPointsPerHour, mDuration);
+
+    if (exerciseStatus == "Done")
+    {
+        mExerciseStatus = StatusDone;
+    }
+    else if (exerciseStatus == "InProgress")
+    {
+        mExerciseStatus = StatusInProgress;
+    }
+    else // NotDone
+    {
+        mExerciseStatus = StatusNotDone;
+    }
+
+    qDebug() << "Got exercise " << mExerciseName << " on " << mDayOfTheWeek << " with duration " << mDuration << "and points " << mPointsPerHour << " with status " << exerciseStatus;
 }

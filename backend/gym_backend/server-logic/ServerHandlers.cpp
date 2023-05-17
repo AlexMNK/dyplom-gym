@@ -4,6 +4,7 @@
 #include "messaging-protocol/messagingprotocol.h"
 #include "utils/DataPartImageHelper.hpp"
 
+#include <QDate>
 #include <QDebug>
 
 typedef bool (*Handler)(DBTransport* dbTransport, const json&, json&);
@@ -17,6 +18,7 @@ static bool HandleGetPostsOperation(DBTransport* dbTransport, const json& userMe
 static bool HandleGetUserExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetAllExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleRefreshUserTrainingWeekOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
@@ -26,6 +28,7 @@ static std::map<QString, Handler> messageHandlers =
     {"GetUserExercises", &HandleGetUserExercisesOperation},
     {"GetExerciseData", &HandleGetExerciseDataOperation},
     {"GetAllExercises", &HandleGetAllExercisesOperation},
+    {"RefreshTrainingWeek", &HandleRefreshUserTrainingWeekOperation},
 };
 
 // -- Data part handlers -- //
@@ -185,6 +188,15 @@ bool HandleGetUserExercisesOperation(DBTransport* dbTransport, const json& userM
     std::vector<int> exerciseIds;
     MessagingProtocol::AcquireGetUserExercises(userMessage, userId);
 
+    // update statuses to not done for days before this
+
+    dbTransport->ExecuteQuery("UPDATE User_Exercises "
+                              "SET exercise_status = 3 "
+                              "WHERE exercise_status = 2 AND day_of_the_week_id < " + QString::number(QDate::currentDate().dayOfWeek()) + " "
+                              "AND user_id = " + QString::number(userId));
+
+    // get all exercise ids
+
     auto optionalQuery = dbTransport->ExecuteQuery("SELECT id from User_Exercises WHERE user_id = " + QString::number(userId));
     if (optionalQuery)
     {
@@ -208,9 +220,10 @@ bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMe
     int exerciseId;
     MessagingProtocol::AcquireGetExerciseData(userMessage, exerciseId);
 
-    auto optionalQuery = dbTransport->ExecuteQuery("SELECT day_of_the_week_name, exercise_name, points_per_hour, duration from User_Exercises "
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT day_of_the_week_name, exercise_name, status_name, points_per_hour, duration from User_Exercises "
                                                    "JOIN Days_Of_The_Week on day_of_the_week_id = Days_Of_The_Week.id "
                                                    "JOIN Exercises on exercise_id = Exercises.id "
+                                                   "JOIN Exercise_statuses on exercise_status = Exercise_statuses.id "
                                                    "WHERE User_Exercises.id = " + QString::number(exerciseId));
     if (optionalQuery)
     {
@@ -220,10 +233,11 @@ bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMe
         {
             QString dayOfTheWeek = DBHelper::GetQueryData(query, 0).toString();
             QString exerciseName = DBHelper::GetQueryData(query, 1).toString();
-            float pointsPerHour = DBHelper::GetQueryData(query, 2).toFloat();
-            int duration = DBHelper::GetQueryData(query, 3).toInt();
+            QString statusName = DBHelper::GetQueryData(query, 2).toString();
+            float pointsPerHour = DBHelper::GetQueryData(query, 3).toFloat();
+            int duration = DBHelper::GetQueryData(query, 4).toInt();
 
-            MessagingProtocol::BuildGetExerciseDataReply(outResultMessage, dayOfTheWeek, exerciseName, pointsPerHour, duration);
+            MessagingProtocol::BuildGetExerciseDataReply(outResultMessage, dayOfTheWeek, exerciseName, statusName, pointsPerHour, duration);
 
             return true;
         }
@@ -233,7 +247,7 @@ bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMe
 }
 
 bool HandleGetAllExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
-{
+{  
     std::vector<QString> allExercises;
 
     auto optionalQuery = dbTransport->ExecuteQuery("SELECT exercise_name from Exercises");
@@ -252,6 +266,20 @@ bool HandleGetAllExercisesOperation(DBTransport* dbTransport, const json& userMe
     }
 
     return false;
+}
+
+bool HandleRefreshUserTrainingWeekOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId;
+    MessagingProtocol::AcquireRefreshUserTrainingWeek(userMessage, userId);
+
+    dbTransport->ExecuteQuery("UPDATE User_Exercises SET exercise_status = 2 WHERE user_id = " + QString::number(userId));
+
+    outResultMessage = {
+        {"Status", "OK"},
+    };
+
+    return true;
 }
 
 // -------------------------------------------- DATA PART HANDLERS ---------------------------------------------------//

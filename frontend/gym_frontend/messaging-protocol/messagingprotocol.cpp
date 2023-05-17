@@ -163,12 +163,15 @@ void MessagingProtocol::BuildGetExerciseData(json& outMessage, int exerciseId)
     };
 }
 
-void MessagingProtocol::AcquireGetExerciseDataReply(const json& message, QString& outDayOfTheWeek, QString& outName, float& pointsPerHour, int& outDuration)
+void MessagingProtocol::AcquireGetExerciseDataReply(const json& message, QString& outDayOfTheWeek, QString& outName, QString& outStatus, float& pointsPerHour, int& outDuration)
 {
     outDayOfTheWeek = QString::fromStdString(message["DayOfTheWeek"]);
     outName = QString::fromStdString(message["ExerciseName"]);
+    outStatus = QString::fromStdString(message["Status"]);
     pointsPerHour = message["PointsPerHour"];
     outDuration = message["Duration"];
+
+    qDebug() << QString::fromStdString(message["Status"]);
 }
 
 //
@@ -188,6 +191,16 @@ void MessagingProtocol::AcquireGetAllExercisesReply(const json& message, std::ve
     {
         outExercises.push_back(QString::fromStdString(message["Exercises"][i]));
     }
+}
+
+//
+void MessagingProtocol::BuildRefreshUserTrainingWeek(json& outMessage, int userId)
+{
+    outMessage =
+    {
+        {"Operation", "RefreshTrainingWeek"},
+        {"UserId", userId},
+    };
 }
 
 

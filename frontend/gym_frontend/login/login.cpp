@@ -1,7 +1,9 @@
 #include "login.h"
 #include "ui_login.h"
 
-#include "utils/IniHelper.hpp"
+#include <QSettings>
+
+#include "utils/inihelper.h"
 
 Login::Login(QWidget *parent)
     : QMainWindow(parent)
@@ -13,16 +15,19 @@ Login::Login(QWidget *parent)
 
     this->mClientInstance = new Client();
 
-    QString serverHostname;
-    int port;
+    QString serverHostname = "";
+    int port = 0;
 
-    if (!ReadIniFile(serverHostname, port, mSavedLogin, mSavedPassword))
+    if (!IniHelper::ReadIniFile(serverHostname, port, mSavedLogin, mSavedPassword))
     {
-        QMessageBox::critical(this, "Error", "Error reading configuration from ini file");
-        exit(1);
+        QSettings* settings = new QSettings(QDir::currentPath() + "/config.ini", QSettings::IniFormat);
+        settings->sync();
+        IniHelper::SetDefaultIniConnectionOptions();
+        IniHelper::ReadIniFile(serverHostname, port, mSavedLogin, mSavedPassword); // read again
+        delete settings;
     }
 
-    if (!mClientInstance->ConnectToServer("localhost", 1234))
+    if (!mClientInstance->ConnectToServer(serverHostname, port))
     {
         QMessageBox::critical(this, "Error", "Failed to connect to a server, try again later");
         exit(1);
@@ -69,20 +74,21 @@ void Login::on_loginButton_clicked()
 
     if (userId != 0)
     {
-        QString userLogin, userPassword;
-
         if (ui->rememberMe->isChecked())
         {
-            userLogin = ui->user_name->text();
-            userPassword = ui->user_password->text();
+            mSavedLogin = ui->user_name->text();
+            mSavedPassword = ui->user_password->text();
         }
         else
         {
             ui->user_name->clear();
             ui->user_password->clear();
+
+            mSavedLogin = "";
+            mSavedPassword = "";
         }
 
-        SetIniLogCredentials(userLogin, userPassword);
+        IniHelper::SetIniLogCredentials(mSavedLogin, mSavedPassword);
 
         CreateMainWindow();
         emit OpenMainWindow(mClientInstance, userId);

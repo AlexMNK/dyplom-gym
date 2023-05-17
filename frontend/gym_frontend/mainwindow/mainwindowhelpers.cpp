@@ -4,8 +4,9 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QFontMetrics>
-#include <QMenu>
+#include <QDate>
 
+#include "utils/inihelper.h"
 #include "models/frienduser.h"
 
 
@@ -265,7 +266,7 @@ void MainWindow::FillFriendList()
 
     for (const auto& friendInstance : mCurrentUser->GetUserFriends())
     {
-        if (friendInstance->GetUserFriendStatus() == FriendStatusIsFriend)
+        if (friendInstance->GetUserFriendStatus() == FriendUser::FriendStatusIsFriend)
         {
             QListWidgetItem *newItem = new QListWidgetItem;
             newItem->setText(friendInstance->GetUserName() + " " + friendInstance->GetUserHashtag()); //newItem->setIcon(QIcon(":/Img/Ranks/silver.png"));
@@ -295,7 +296,7 @@ void MainWindow::OnFriendClicked(QListWidgetItem* item)
 
     for (const auto& friendInstance : mCurrentUser->GetUserFriends())
     {
-        if (friendInstance->GetUserFriendStatus() == FriendStatusIsFriend)
+        if (friendInstance->GetUserFriendStatus() == FriendUser::FriendStatusIsFriend)
         {
             if (currentIndex == index)
             {
@@ -531,6 +532,22 @@ void MainWindow::BackToMainWindowFromPostSlot()
     mPostWindow->hide();
 }
 
+QPixmap MainWindow::GetProperExerciseStatusIcon(Exercise::ExerciseStatuses status)
+{
+    if (status == Exercise::StatusDone)
+    {
+       return QPixmap(":/exerciseStates/exercise_states/done.jpg");
+    }
+    else if (status == Exercise::StatusInProgress)
+    {
+        return QPixmap(":/exerciseStates/exercise_states/in_progress.jpg");
+    }
+    else // StatusNotDone
+    {
+        return QPixmap(":/exerciseStates/exercise_states/not_done.jpg");
+    }
+}
+
 void MainWindow::FillTrainingLists()
 {
     ui->traningMondayList->clear();
@@ -543,8 +560,19 @@ void MainWindow::FillTrainingLists()
 
     for (const auto& exercise : mExercises)
     {
-        QString exerciseData = exercise->GetExerciseName() + "\n " + QString::number(exercise->GetDuration()) + " minutes";
+        QString exerciseName = exercise->GetExerciseName();
+        if (exerciseName.size() > 11)
+        {
+            exerciseName = " " + exerciseName.sliced(0, exerciseName.lastIndexOf(" ")) + "\n " + exerciseName.sliced(exerciseName.lastIndexOf(" ") + 1);
+        }
+        else
+        {
+            exerciseName = " " + exerciseName;
+        }
+
+        QString exerciseData = exerciseName + "\n " + QString::number(exercise->GetDuration()) + " minutes";
         QListWidgetItem *newItem = new QListWidgetItem(exerciseData);
+        newItem->setIcon(GetProperExerciseStatusIcon(exercise->GetExerciseStatus()));
 
         if (exercise->GetDayOfTheWeek() == "Monday")
         {
@@ -577,5 +605,21 @@ void MainWindow::FillTrainingLists()
     }
 }
 
+void MainWindow::ResetTrainingWeekIfNeeded()
+{
+    int iniWeekNumber = IniHelper::GetCurrentWeekNumber();
+    int iniYearNumber = IniHelper::GetCurrentYearNumber();
 
+    if (iniWeekNumber != QDate::currentDate().weekNumber() || iniYearNumber != QDate::currentDate().year())
+    {
+        json refreshExercisesStatus;
+        MessagingProtocol::BuildRefreshUserTrainingWeek(refreshExercisesStatus, mCurrentUser->GetUserId());
+
+        mClientInstance->SendDataToServer(refreshExercisesStatus);                  // SEND request to update
+
+        mClientInstance->ReceiveDataFromServer();                                   // RCV ignore value
+
+        IniHelper::SetCurrentWeekAndYearNumber(QDate::currentDate().weekNumber(), QDate::currentDate().year());
+    }
+}
 

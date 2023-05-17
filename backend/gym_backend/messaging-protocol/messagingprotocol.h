@@ -47,11 +47,15 @@ public:
 
     // Get all exercise info by exercise id
     static void AcquireGetExerciseData(const json& message, int& outExerciseId);
-    static void BuildGetExerciseDataReply(json& outMessage, const QString& dayOfTheWeek, const QString& exerciseName, float pointsPerHour, int duration);
+    static void BuildGetExerciseDataReply(json& outMessage, const QString& dayOfTheWeek, const QString& exerciseName, const QString& statusName, float pointsPerHour, int duration);
 
     // Get all available exercises
     // no acquire
     static void BuildGetAllExercisesReply(json& outMessage, const std::vector<QString> exercises);
+
+    // Set all user exersises to in progress
+    static void AcquireRefreshUserTrainingWeek(const json& message, int& outId);
+    // no reply
 };
 
 #endif // MESSAGINGPROTOCOL_H

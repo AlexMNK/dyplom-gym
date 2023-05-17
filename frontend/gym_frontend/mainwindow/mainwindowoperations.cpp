@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "models/frienduser.h"
+#include "utils/inihelper.h"
 
 void MainWindow::PerformGetUserDataOperation()
 {
@@ -57,7 +58,7 @@ void MainWindow::PerformGetUserFriendsOperation()
 
         const json serverReply = mClientInstance->ReceiveDataFromServer();                                                             // RCV all remaining friend data
 
-        friendUser->AcquireGetUserDataReply(serverReply, FriendStatusIsFriend);
+        friendUser->AcquireGetUserDataReply(serverReply, FriendUser::FriendStatusIsFriend);
         mCurrentUser->GetUserFriends().push_back(friendUser);
     }
 
@@ -155,6 +156,8 @@ void MainWindow::PerformGetPostsOperation()
 void MainWindow::PerformGetUserExercises()
 {
     mExercises.clear(); // clear prev exercises before loading once again
+
+    ResetTrainingWeekIfNeeded(); // refresh all statuses to "in progress" if it is not current week
 
     std::vector<int> exerciseIds;
 

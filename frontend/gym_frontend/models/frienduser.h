@@ -10,16 +10,17 @@
 
 using json = nlohmann::json;
 
-enum FriendStatuses
-{
-    FriendStatusRequestedByMe = 0,
-    FriendStatusRequestedByHim = 1,
-    FriendStatusIsFriend = 2,
-};
-
-
 class FriendUser : public IUser
 {
+
+public:
+    enum FriendStatuses
+    {
+        FriendStatusRequestedByMe = 0,
+        FriendStatusRequestedByHim = 1,
+        FriendStatusIsFriend = 2,
+    };
+
 public:
     FriendUser(int id, QString friendsSince);
     FriendStatuses GetUserFriendStatus() { return mUserFriendStatus; }

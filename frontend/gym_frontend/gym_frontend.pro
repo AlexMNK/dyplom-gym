@@ -30,7 +30,8 @@ SOURCES += \
     models/userpost.cpp \
     postwindow/addpostwindow.cpp \
     postwindow/postwindow.cpp \
-    transport/socketconnection.cpp
+    transport/socketconnection.cpp \
+    utils/inihelper.cpp
 
 HEADERS += \
     client-logic/client.h \
@@ -49,8 +50,8 @@ HEADERS += \
     postwindow/postwindow.h \
     transport/socketconnection.h \
     utils/DataPartImageHelper.hpp \
-    utils/IniHelper.hpp \
-    utils/QByteArrayConverter.hpp
+    utils/QByteArrayConverter.hpp \
+    utils/inihelper.h
 
 FORMS += \
     exercisewindow/addexercise.ui \

@@ -110,6 +110,8 @@ private: // helpers
     void FillTrainingLists();
     QPixmap GetProperRankIcon(int points);
     QString GetProperRankName(int points);
+    QPixmap GetProperExerciseStatusIcon(Exercise::ExerciseStatuses status);
+    void ResetTrainingWeekIfNeeded();
     void ShowExerciseWindowDependingOnDay(int index, QString dayOfTheWeek);
 
     void ShowPostsSection();

@@ -11,4 +11,9 @@
         <file>ranks/platinum.png</file>
         <file>ranks/silver.png</file>
     </qresource>
+    <qresource prefix="/exerciseStates">
+        <file>exercise_states/done.jpg</file>
+        <file>exercise_states/in_progress.jpg</file>
+        <file>exercise_states/not_done.jpg</file>
+    </qresource>
 </RCC>
