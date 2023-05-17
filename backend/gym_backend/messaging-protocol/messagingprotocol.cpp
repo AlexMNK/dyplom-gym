@@ -200,3 +200,12 @@ void MessagingProtocol::AcquireRefreshUserTrainingWeek(const json& message, int&
     outId = message["UserId"];
 }
 
+//
+void MessagingProtocol::AcquireAddExercise(const json& message, int& outId, QString& outDayOfTheWeek, QString& outExerciseName, int& outDuration)
+{
+    outId = message["UserId"];
+    outDayOfTheWeek = QString::fromStdString(message["DayOfTheWeek"]);
+    outExerciseName = QString::fromStdString(message["ExerciseName"]);
+    outDuration = message["Duration"];
+}
+

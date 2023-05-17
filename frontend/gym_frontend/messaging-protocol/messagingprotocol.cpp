@@ -203,6 +203,19 @@ void MessagingProtocol::BuildRefreshUserTrainingWeek(json& outMessage, int userI
     };
 }
 
+//
+void MessagingProtocol::BuildAddExercise(json& outMessage, int userId, const QString& dayOfTheWeek, const QString& exerciseName, int duration)
+{
+    outMessage =
+    {
+        {"Operation", "AddExercise"},
+        {"UserId", userId},
+        {"DayOfTheWeek", dayOfTheWeek.toStdString()},
+        {"ExerciseName", exerciseName.toStdString()},
+        {"Duration", duration},
+    };
+}
+
 
 
 

@@ -6,6 +6,10 @@
 
 #include <QMainWindow>
 
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
 namespace Ui {
 class AddExercise;
 }
@@ -25,7 +29,9 @@ public slots:
     void AddExerciseWindowOpened(Client* clientInstance, int userId, QString dayOfTheWeek);
 
 private slots:
-    void on_back_clicked();
+    void on_cancel_clicked();
+
+    void on_add_clicked();
 
 private:
     void FillExercisesComboBox();

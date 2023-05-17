@@ -19,6 +19,7 @@ static bool HandleGetUserExercisesOperation(DBTransport* dbTransport, const json
 static bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetAllExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleRefreshUserTrainingWeekOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleAddExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
@@ -29,6 +30,7 @@ static std::map<QString, Handler> messageHandlers =
     {"GetExerciseData", &HandleGetExerciseDataOperation},
     {"GetAllExercises", &HandleGetAllExercisesOperation},
     {"RefreshTrainingWeek", &HandleRefreshUserTrainingWeekOperation},
+    {"AddExercise", &HandleAddExerciseOperation},
 };
 
 // -- Data part handlers -- //
@@ -280,6 +282,37 @@ bool HandleRefreshUserTrainingWeekOperation(DBTransport* dbTransport, const json
     };
 
     return true;
+}
+
+bool HandleAddExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId, duration;
+    QString dayOfTheWeek, exerciseName;
+
+    MessagingProtocol::AcquireAddExercise(userMessage, userId, dayOfTheWeek, exerciseName, duration);
+
+    qDebug() << dayOfTheWeek << exerciseName;
+
+    auto optionalQuery = dbTransport->ExecuteQuery("INSERT INTO User_Exercises "
+                              " VALUES (" + QString::number(userId) +", "
+                              "(SELECT id FROM Days_Of_The_Week WHERE day_of_the_week_name = '" + dayOfTheWeek + "'), "
+                              "(SELECT id FROM Exercises WHERE exercise_name = '" + exerciseName + "'), "
+                              "2, " +  QString::number(duration) + ")");
+
+    if (optionalQuery)
+    {
+        outResultMessage = {
+            {"Status", "OK"},
+        };
+
+        return true;
+    }
+
+    outResultMessage = {
+        {"Status", "ERROR"},
+    };
+
+    return false;
 }
 
 // -------------------------------------------- DATA PART HANDLERS ---------------------------------------------------//

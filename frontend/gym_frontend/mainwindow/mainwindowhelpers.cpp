@@ -502,6 +502,8 @@ void MainWindow::BackToMainWindowFromAddExerciseSlot()
 {
     mAddExerciseWindow->hide();
     mClientInstance->SetCurrentWindow(this);
+
+    PerformGetUserExercises();
 }
 
 void MainWindow::CreatePostWindow()

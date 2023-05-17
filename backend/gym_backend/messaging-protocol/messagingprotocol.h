@@ -56,6 +56,10 @@ public:
     // Set all user exersises to in progress
     static void AcquireRefreshUserTrainingWeek(const json& message, int& outId);
     // no reply
+
+    // Add a new exercise on a certain day
+    static void AcquireAddExercise(const json& message, int& outId, QString& outDayOfTheWeek, QString& outExerciseName, int& outDuration);
+    // no reply
 };
 
 #endif // MESSAGINGPROTOCOL_H
