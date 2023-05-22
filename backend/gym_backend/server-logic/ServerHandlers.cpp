@@ -20,6 +20,8 @@ static bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json&
 static bool HandleGetAllExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleRefreshUserTrainingWeekOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleAddExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleDeleteExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleEditExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
@@ -31,6 +33,8 @@ static std::map<QString, Handler> messageHandlers =
     {"GetAllExercises", &HandleGetAllExercisesOperation},
     {"RefreshTrainingWeek", &HandleRefreshUserTrainingWeekOperation},
     {"AddExercise", &HandleAddExerciseOperation},
+    {"DeleteExercise", &HandleDeleteExerciseOperation},
+    {"EditExercise", &HandleEditExerciseOperation},
 };
 
 // -- Data part handlers -- //
@@ -291,14 +295,62 @@ bool HandleAddExerciseOperation(DBTransport* dbTransport, const json& userMessag
 
     MessagingProtocol::AcquireAddExercise(userMessage, userId, dayOfTheWeek, exerciseName, duration);
 
-    qDebug() << dayOfTheWeek << exerciseName;
-
     auto optionalQuery = dbTransport->ExecuteQuery("INSERT INTO User_Exercises "
                               " VALUES (" + QString::number(userId) +", "
                               "(SELECT id FROM Days_Of_The_Week WHERE day_of_the_week_name = '" + dayOfTheWeek + "'), "
                               "(SELECT id FROM Exercises WHERE exercise_name = '" + exerciseName + "'), "
                               "2, " +  QString::number(duration) + ")");
 
+    if (optionalQuery)
+    {
+        outResultMessage = {
+            {"Status", "OK"},
+        };
+
+        return true;
+    }
+
+    outResultMessage = {
+        {"Status", "ERROR"},
+    };
+
+    return false;
+}
+
+bool HandleDeleteExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int exerciseId;
+
+    MessagingProtocol::AcquireDeleteExercise(userMessage, exerciseId);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("DELETE FROM User_Exercises WHERE id = " + QString::number(exerciseId));
+
+    if (optionalQuery)
+    {
+        outResultMessage = {
+            {"Status", "OK"},
+        };
+
+        return true;
+    }
+
+    outResultMessage = {
+        {"Status", "ERROR"},
+    };
+
+    return false;
+}
+
+bool HandleEditExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int exerciseId, duration, status;
+
+    MessagingProtocol::AcquireEditExercise(userMessage, exerciseId, duration, status);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("UPDATE User_Exercises "
+                                                   "SET exercise_status = " + QString::number(status + 1) + ", "
+                                                   "duration = " + QString::number(duration) + " "
+                                                   "WHERE id = " + QString::number(exerciseId));
     if (optionalQuery)
     {
         outResultMessage = {

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <QMessageBox>
+#include <QIntValidator>
 #include "messaging-protocol/messagingprotocol.h"
 
 AddExercise::AddExercise(QWidget *parent) :

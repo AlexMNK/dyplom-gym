@@ -485,6 +485,8 @@ void MainWindow::BackToMainWindowFromExerciseSlot()
 {
     mExerciseWindow->hide();
     mClientInstance->SetCurrentWindow(this);
+
+    PerformGetUserExercises();
 }
 
 void MainWindow::CreateAddExerciseWindow()

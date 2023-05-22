@@ -209,3 +209,18 @@ void MessagingProtocol::AcquireAddExercise(const json& message, int& outId, QStr
     outDuration = message["Duration"];
 }
 
+//
+void MessagingProtocol::AcquireDeleteExercise(const json& message, int& outExerciseId)
+{
+    outExerciseId = message["ExerciseId"];
+}
+
+//
+void MessagingProtocol::AcquireEditExercise(const json& message, int& outExerciseId, int& outDuration, int& outStatus)
+{
+    outExerciseId = message["ExerciseId"];
+    outDuration = message["Duration"];
+    outStatus = message["Status"];
+}
+
+

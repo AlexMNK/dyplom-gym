@@ -216,6 +216,28 @@ void MessagingProtocol::BuildAddExercise(json& outMessage, int userId, const QSt
     };
 }
 
+//
+void MessagingProtocol::BuildDeleteExercise(json& outMessage, int exerciseId)
+{
+    outMessage =
+    {
+        {"Operation", "DeleteExercise"},
+        {"ExerciseId", exerciseId},
+    };
+}
+
+//
+void MessagingProtocol::BuildEditExercise(json& outMessage, int exerciseId, int duration, int status)
+{
+    outMessage =
+    {
+        {"Operation", "EditExercise"},
+        {"ExerciseId", exerciseId},
+        {"Duration", duration},
+        {"Status", status},
+    };
+}
+
 
 
 

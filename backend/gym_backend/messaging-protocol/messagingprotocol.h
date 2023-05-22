@@ -60,6 +60,14 @@ public:
     // Add a new exercise on a certain day
     static void AcquireAddExercise(const json& message, int& outId, QString& outDayOfTheWeek, QString& outExerciseName, int& outDuration);
     // no reply
+
+    // Delete a user exercise by id
+    static void AcquireDeleteExercise(const json& message, int& outExerciseId);
+    // no reply
+
+    // Edit a user exercise by id
+    static void AcquireEditExercise(const json& message, int& outExerciseId, int& outDuration, int& outStatus);
+    // no reply
 };
 
 #endif // MESSAGINGPROTOCOL_H

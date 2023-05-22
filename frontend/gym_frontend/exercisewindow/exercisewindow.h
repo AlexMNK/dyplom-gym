@@ -25,13 +25,18 @@ public slots:
     void ExerciseWindowOpened(Client* clientInstance, Exercise* exercise);
 
 private slots:
-    void on_pushButton_clicked();
+    void on_back_clicked();
+    void on_Delete_clicked();
+    void on_Edit_clicked();
+    void on_Mark_clicked();
 
 private:
     Ui::ExerciseWindow *ui;
 
     Client* mClientInstance;
     Exercise* mCurrentExercise;
+
+    bool mIfEditable{false};
 };
 
 #endif // EXERCISEWINDOW_H
