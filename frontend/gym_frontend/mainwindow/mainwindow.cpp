@@ -67,6 +67,11 @@ void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
     PerformGetUserFriendsOperation();
     PerformGetPostsOperation();
     PerformGetUserExercises();
+
+    HideMyProfileSection();
+    HideTrainingSection();
+
+    ShowPostsSection();
 }
 
 void MainWindow::on_signOutButton_clicked()

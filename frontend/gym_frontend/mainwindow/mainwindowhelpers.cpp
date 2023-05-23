@@ -487,6 +487,7 @@ void MainWindow::BackToMainWindowFromExerciseSlot()
     mClientInstance->SetCurrentWindow(this);
 
     PerformGetUserExercises();
+    PerformGetUserDataOperation();
 }
 
 void MainWindow::CreateAddExerciseWindow()

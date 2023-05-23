@@ -90,7 +90,7 @@ QLineEdit { border: 1px solid black }</string>
      </rect>
     </property>
     <property name="text">
-     <string>Enter user email or hashtag</string>
+     <string>Enter user name or hashtag</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="user_password">

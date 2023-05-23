@@ -100,12 +100,10 @@ bool HandleAuthorizeOperation(DBTransport* dbTransport, const json& userMessage,
             return false;
         }
     }
-    else // logic with email
+    else // logic with name
     {
         auto optionalQuery = dbTransport->ExecuteQuery("SELECT id, user_password FROM Users "
-                                                       "WHERE user_email = ( "
-                                                       "SELECT user_email FROM Users "
-                                                       "WHERE user_email ='" + userLogin + "')");
+                                                       "WHERE user_name = '" + userLogin + "'");
         if (optionalQuery)
         {
             QSqlQuery query(std::move(optionalQuery.value()));
@@ -344,8 +342,22 @@ bool HandleDeleteExerciseOperation(DBTransport* dbTransport, const json& userMes
 bool HandleEditExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
 {
     int exerciseId, duration, status;
+    int userId, prevStatus, points_per_hour;
 
     MessagingProtocol::AcquireEditExercise(userMessage, exerciseId, duration, status);
+
+    auto preparationQuery = dbTransport->ExecuteQuery("SELECT user_id, exercise_status, points_per_hour FROM User_Exercises "
+                                                      "JOIN Exercises on exercise_id = Exercises.id "
+                                                      "WHERE User_Exercises.id = " + QString::number(exerciseId));
+
+    QSqlQuery query(std::move(preparationQuery.value()));
+
+    if (DBHelper::GetNextQueryResultRow(query))
+    {
+        userId = DBHelper::GetQueryData(query, 0).toInt();
+        prevStatus = DBHelper::GetQueryData(query, 1).toInt();
+        points_per_hour = DBHelper::GetQueryData(query, 2).toInt();
+    }
 
     auto optionalQuery = dbTransport->ExecuteQuery("UPDATE User_Exercises "
                                                    "SET exercise_status = " + QString::number(status + 1) + ", "
@@ -353,6 +365,14 @@ bool HandleEditExerciseOperation(DBTransport* dbTransport, const json& userMessa
                                                    "WHERE id = " + QString::number(exerciseId));
     if (optionalQuery)
     {
+        if (prevStatus != 1 && status == 0)
+        {
+            float temp = duration / 60.0;
+            int pointsToAdd = temp * points_per_hour;
+
+            dbTransport->ExecuteQuery("UPDATE Users SET user_points = user_points + " + QString::number(pointsToAdd) + " WHERE id = " + QString::number(userId));
+        }
+
         outResultMessage = {
             {"Status", "OK"},
         };
