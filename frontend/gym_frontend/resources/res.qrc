@@ -3,6 +3,7 @@
         <file>Background.jpg</file>
         <file>BackgroundWithLogo.jpg</file>
         <file>icon.jpg</file>
+        <file>noimage.jpg</file>
     </qresource>
     <qresource prefix="/ranks">
         <file>ranks/diamond.png</file>

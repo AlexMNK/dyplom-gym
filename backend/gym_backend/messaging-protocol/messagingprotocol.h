@@ -68,6 +68,22 @@ public:
     // Edit a user exercise by id
     static void AcquireEditExercise(const json& message, int& outExerciseId, int& outDuration, int& outStatus);
     // no reply
+
+    // Add a new post
+    static void AcquireAddPost(const json& message, int& outUserId, QString& outText, int& outImageSize);
+    // no reply
+
+    // Edit post text
+    static void AcquireEditPost(const json& message, int& outPostId, QString& outText);
+    // no reply
+
+    // Edit post image
+    static void AcquireUpdatePostImage(const json& message, int& outPostId, int& outImageSize);
+    // no reply
+
+    // Delete post by id
+    static void AcquireDeletePost(const json& message, int& outPostId);
+    // no reply
 };
 
 #endif // MESSAGINGPROTOCOL_H

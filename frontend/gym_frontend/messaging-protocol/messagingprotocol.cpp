@@ -238,6 +238,50 @@ void MessagingProtocol::BuildEditExercise(json& outMessage, int exerciseId, int 
     };
 }
 
+//
+void MessagingProtocol::BuildAddPost(json& outMessage, int userId, const QString& text, int imageSize)
+{
+    outMessage =
+    {
+        {"Operation", "AddPost"},
+        {"UserId", userId},
+        {"Text", text.toStdString()},
+        {"ImageSize", imageSize},
+    };
+}
+
+//
+void MessagingProtocol::BuildEditPost(json& outMessage, int postId, const QString& text)
+{
+    outMessage =
+    {
+        {"Operation", "EditPostText"},
+        {"PostId", postId},
+        {"Text", text.toStdString()},
+    };
+}
+
+//
+void MessagingProtocol::BuildUpdatePostImage(json& outMessage, int postId, int imageSize)
+{
+    outMessage =
+    {
+        {"Operation", "EditPostImage"},
+        {"PostId", postId},
+        {"ImageSize", imageSize},
+    };
+}
+
+//
+void MessagingProtocol::BuildDeletePost(json& outMessage, int postId)
+{
+    outMessage =
+    {
+        {"Operation", "DeletePost"},
+        {"PostId", postId},
+    };
+}
+
 
 
 

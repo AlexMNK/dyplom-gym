@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>781</width>
-    <height>345</height>
+    <width>649</width>
+    <height>219</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,27 +18,31 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>781</width>
-    <height>345</height>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>781</width>
-    <height>345</height>
+    <width>1000</width>
+    <height>219</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Post</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../resources/res.qrc">
+    <normaloff>:/img/icon.jpg</normaloff>:/img/icon.jpg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="image">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>10</y>
-      <width>321</width>
-      <height>291</height>
+      <width>221</width>
+      <height>201</height>
      </rect>
     </property>
     <property name="font">
@@ -53,60 +57,109 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="username">
+   <widget class="QLabel" name="info">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>40</y>
-      <width>161</width>
-      <height>16</height>
+      <x>240</x>
+      <y>10</y>
+      <width>181</width>
+      <height>51</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
     <property name="text">
-     <string>Username</string>
+     <string>Pos</string>
     </property>
    </widget>
-   <widget class="QLabel" name="text">
+   <widget class="QPushButton" name="back">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>90</y>
-      <width>161</width>
-      <height>121</height>
+      <x>430</x>
+      <y>20</y>
+      <width>101</width>
+      <height>31</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="text">
-     <string>text</string>
+     <string>Close</string>
     </property>
    </widget>
-   <widget class="QLabel" name="time">
+   <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>220</y>
-      <width>161</width>
-      <height>41</height>
+      <x>240</x>
+      <y>70</y>
+      <width>291</width>
+      <height>141</height>
      </rect>
     </property>
-    <property name="text">
-     <string>time</string>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>14</pointsize>
+     </font>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="edit">
     <property name="geometry">
      <rect>
-      <x>650</x>
-      <y>150</y>
-      <width>80</width>
-      <height>24</height>
+      <x>540</x>
+      <y>70</y>
+      <width>101</width>
+      <height>31</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="text">
-     <string>Back</string>
+     <string>Edit</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="editPicture">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>125</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>Edit Picture</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="delete_2">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>180</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>Delete</string>
     </property>
    </widget>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/res.qrc"/>
+ </resources>
  <connections/>
 </ui>

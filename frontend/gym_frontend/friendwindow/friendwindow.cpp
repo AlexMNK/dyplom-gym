@@ -29,11 +29,19 @@ void FriendWindow::FriendWindowOpened(Client* clientInstance, MainUser* mainUser
     ui->bench->setText(QString::number(mFriendInstance->GetUserMaxBench()));
 
     QPixmap pixmap;
-    bool loadImage = pixmap.loadFromData(QByteArray::fromHex(*mFriendInstance->GetUserPicture()));
 
-    if (!loadImage)
+    if (mFriendInstance->GetUserPicture() == nullptr)
     {
-        QMessageBox::warning(this, "Warning", "Failed load user image");
+        pixmap = QPixmap(":/img/noimage.jpg");
+    }
+    else
+    {
+        bool loadImage = pixmap.loadFromData(QByteArray::fromHex(*mFriendInstance->GetUserPicture()));
+
+        if (!loadImage)
+        {
+            QMessageBox::warning(this, "Warning", "Failed to load user image");
+        }
     }
 
     ui->image->setPixmap(pixmap);

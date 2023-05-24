@@ -223,4 +223,32 @@ void MessagingProtocol::AcquireEditExercise(const json& message, int& outExercis
     outStatus = message["Status"];
 }
 
+//
+void MessagingProtocol::AcquireAddPost(const json& message, int& outUserId, QString& outText, int& outImageSize)
+{
+    outUserId = message["UserId"];
+    outText = QString::fromStdString(message["Text"]);
+    outImageSize = message["ImageSize"];
+}
+
+//
+void MessagingProtocol::AcquireEditPost(const json& message, int& outPostId, QString& outText)
+{
+    outPostId = message["PostId"];
+    outText = QString::fromStdString(message["Text"]);
+}
+
+//
+void MessagingProtocol::AcquireUpdatePostImage(const json& message, int& outPostId, int& outImageSize)
+{
+    outPostId = message["PostId"];
+    outImageSize = message["ImageSize"];
+}
+
+//
+void MessagingProtocol::AcquireDeletePost(const json& message, int& outPostId)
+{
+    outPostId = message["PostId"];
+}
+
 

@@ -26,7 +26,7 @@ protected:
     QString mUserName;
     QString mUserEmail;
     QString mUserHashtag;
-    QByteArray* mUserProfilePicture;
+    QByteArray* mUserProfilePicture{nullptr};
     float mUserMaxBench;
     float mUserMaxSquat;
     float mUserMaxDeadlift;

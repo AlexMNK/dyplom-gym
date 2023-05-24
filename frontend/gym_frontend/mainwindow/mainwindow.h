@@ -53,7 +53,7 @@ public:
 signals:
     void BackToAuthorization();
     void OpenFriendWindow(Client* clientInstance, MainUser* mainUser, FriendUser* friendUser);
-    void OpenPostWindow(UserPost* userPost, QString userName);
+    void OpenPostWindow(Client* clientInstance, UserPost* userPost, QString userName);
     void OpenExerciseWindow(Client* clientInstance, Exercise* exercise);
     void OpenAddExerciseWindow(Client* clientInstance, int userId, QString dayOfTheWeek);
     void OpenAddPostWindow(Client* clientInstance, int userId);

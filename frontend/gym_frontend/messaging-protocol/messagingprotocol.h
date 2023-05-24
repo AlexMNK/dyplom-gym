@@ -67,6 +67,22 @@ public:
     // Edit a user exercise by id
     static void BuildEditExercise(json& outMessage, int exerciseId, int duration, int status);
     // no reply
+
+    // Add a new post
+    static void BuildAddPost(json& outMessage, int userId, const QString& text, int imageSize);
+    // no reply
+
+    // Edit post text
+    static void BuildEditPost(json& outMessage, int postId, const QString& text);
+    // no reply
+
+    // Edit post image
+    static void BuildUpdatePostImage(json& outMessage, int postId, int imageSize);
+    // no reply
+
+    // Delete post by id
+    static void BuildDeletePost(json& outMessage, int postId);
+    // no reply
 };
 
 #endif // MESSAGINGPROTOCOL_H

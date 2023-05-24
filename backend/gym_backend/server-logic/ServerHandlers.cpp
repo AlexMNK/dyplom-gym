@@ -22,6 +22,8 @@ static bool HandleRefreshUserTrainingWeekOperation(DBTransport* dbTransport, con
 static bool HandleAddExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleDeleteExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleEditExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleEditPostTextOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleDeletePostOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
@@ -35,6 +37,8 @@ static std::map<QString, Handler> messageHandlers =
     {"AddExercise", &HandleAddExerciseOperation},
     {"DeleteExercise", &HandleDeleteExerciseOperation},
     {"EditExercise", &HandleEditExerciseOperation},
+    {"EditPostText", &HandleEditPostTextOperation},
+    {"DeletePost", &HandleDeletePostOperation},
 };
 
 // -- Data part handlers -- //
@@ -42,12 +46,16 @@ static std::map<QString, Handler> messageHandlers =
 static bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleUpdateUserImageOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetPostDataOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleAddPostOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleEditPostImageOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, DataPartHandler> dataPartHandlers =
 {
     {"GetUserData", &HandleGetUserDataOperation},
     {"UpdateUserImage", &HandleUpdateUserImageOperation},
     {"GetPostData", &HandleGetPostDataOperation},
+    {"AddPost", &HandleAddPostOperation},
+    {"EditPostImage", &HandleEditPostImageOperation},
 };
 
 bool ServerMessageHandler::HandleMessage(SocketConnection* socketConnection, DBTransport* dbTransport, const QString& operation, const json& userMessage, json& outResultMessage)
@@ -387,6 +395,54 @@ bool HandleEditExerciseOperation(DBTransport* dbTransport, const json& userMessa
     return false;
 }
 
+bool HandleEditPostTextOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int postId;
+    QString text;
+
+    MessagingProtocol::AcquireEditPost(userMessage, postId, text);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("UPDATE Posts SET post_text = '" + text + "' WHERE id = " + QString::number(postId));
+    if (optionalQuery)
+    {
+        outResultMessage = {
+            {"Status", "OK"},
+        };
+
+        return true;
+    }
+
+    outResultMessage = {
+        {"Status", "ERROR"},
+    };
+
+    return false;
+}
+
+bool HandleDeletePostOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int postId;
+
+    MessagingProtocol::AcquireDeletePost(userMessage, postId);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("DELETE FROM Posts WHERE id = " + QString::number(postId));
+
+    if (optionalQuery)
+    {
+        outResultMessage = {
+            {"Status", "OK"},
+        };
+
+        return true;
+    }
+
+    outResultMessage = {
+        {"Status", "ERROR"},
+    };
+
+    return false;
+}
+
 // -------------------------------------------- DATA PART HANDLERS ---------------------------------------------------//
 
 bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
@@ -427,9 +483,13 @@ bool HandleGetUserDataOperation(SocketConnection* socketConnection, DBTransport*
 
                 json imageSize;
                 MessagingProtocol::BuildImageSize(imageSize, userImage.size());
+
                 socketConnection->Write(imageSize);
 
-                DataPartImageHelper::SendImageByParts(socketConnection, userImage);
+                if (userImage.size() != 0)
+                {
+                    DataPartImageHelper::SendImageByParts(socketConnection, userImage);
+                }
 
                 auto optionalQuery3 = dbTransport->ExecuteQuery("SELECT hashtag FROM User_Hashtags WHERE id = " + QString::number(userHashId));
                 if (optionalQuery3)
@@ -516,7 +576,10 @@ bool HandleGetPostDataOperation(SocketConnection* socketConnection, DBTransport*
                 MessagingProtocol::BuildImageSize(imageSize, postImage.size());
                 socketConnection->Write(imageSize);
 
-                DataPartImageHelper::SendImageByParts(socketConnection, postImage);
+                if (postImage.size() != 0)
+                {
+                    DataPartImageHelper::SendImageByParts(socketConnection, postImage);
+                }
 
                 MessagingProtocol::BuildGetPostDataReply(outResultMessage, postUserId, postText, postTime);
 
@@ -526,6 +589,104 @@ bool HandleGetPostDataOperation(SocketConnection* socketConnection, DBTransport*
     }
 
     return false;
+}
+
+bool HandleAddPostOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId, imageSize;
+    QString text;
+
+    MessagingProtocol::AcquireAddPost(userMessage, userId, text, imageSize);
+
+    qDebug() << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm");
+
+    if (imageSize == 0) // case with no image
+    {
+
+
+        auto optionalQuery = dbTransport->ExecuteQuery("INSERT INTO Posts "
+                                                       "VALUES (" + QString::number(userId) + ", "
+                                                       "'" + text + "', '"
+                                                       + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm") + "', NULL)");
+        if (optionalQuery)
+        {
+            outResultMessage = {
+                {"Status", "OK"},
+            };
+
+            return true;
+        }
+        else
+        {
+            outResultMessage = {
+                {"Status", "ERROR"},
+            };
+
+            return false;
+        }
+    }
+    else // case with image
+    {
+        QByteArray imageData = DataPartImageHelper::ReceiveImageByParts(socketConnection, imageSize);
+
+        auto optionalQuery = dbTransport->ExecuteQuery("Declare @IMAGE_ID int "
+                                                       "INSERT INTO Images "
+                                                       "VALUES (CONVERT(varbinary(MAX), '" + QString(imageData.toHex()) +"')) "
+                                                       "SET @IMAGE_ID = SCOPE_IDENTITY() "
+                                                       "INSERT INTO Posts "
+                                                       "VALUES (" + QString::number(userId) + ", "
+                                                       "'" + text + "', '"
+                                                       + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm") + "', @IMAGE_ID)");
+
+        if (optionalQuery)
+        {
+            outResultMessage = {
+                {"Status", "OK"},
+            };
+
+            return true;
+        }
+        else
+        {
+            outResultMessage = {
+                {"Status", "ERROR"},
+            };
+
+            return false;
+        }
+    }
+}
+
+bool HandleEditPostImageOperation(SocketConnection* socketConnection, DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int postId, imageSize;
+    MessagingProtocol::AcquireUpdatePostImage(userMessage, postId, imageSize);
+
+    QByteArray imageData = DataPartImageHelper::ReceiveImageByParts(socketConnection, imageSize);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("Declare @IMAGE_ID int "
+                                                   "INSERT INTO Images "
+                                                   "VALUES (CONVERT(varbinary(MAX), '" + QString(imageData.toHex()) +"')) "
+                                                   "SET @IMAGE_ID = SCOPE_IDENTITY() "
+                                                   "UPDATE Posts "
+                                                   "SET post_picture = @IMAGE_ID "
+                                                   "WHERE id = " + QString::number(postId));
+    if (optionalQuery)
+    {
+        outResultMessage = {
+            {"Status", "OK"},
+        };
+
+        return true;
+    }
+    else
+    {
+        outResultMessage = {
+            {"Status", "ERROR"},
+        };
+
+        return false;
+    }
 }
 
 

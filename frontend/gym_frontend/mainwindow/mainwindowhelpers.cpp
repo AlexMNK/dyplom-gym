@@ -67,11 +67,19 @@ void MainWindow::SetupUiDesign()
 void MainWindow::FillCurentUserDataFields()
 {
     QPixmap pixmap;
-    bool loadImage = pixmap.loadFromData(QByteArray::fromHex(*mCurrentUser->GetUserPicture()));
 
-    if (!loadImage)
+    if (mCurrentUser->GetUserPicture() == nullptr)
     {
-        QMessageBox::warning(this, "Warning", "Failed to get image data from server");
+        pixmap = QPixmap(":/img/noimage.jpg");
+    }
+    else
+    {
+        bool loadImage = pixmap.loadFromData(QByteArray::fromHex(*mCurrentUser->GetUserPicture()));
+
+        if (!loadImage)
+        {
+            QMessageBox::warning(this, "Warning", "Failed to get image data from server");
+        }
     }
 
     // side panel
@@ -328,6 +336,8 @@ void MainWindow::BackToMainWindowFromAddPostSlot()
 {
     mAddPostWindow->hide();
     mClientInstance->SetCurrentWindow(this);
+
+    PerformGetPostsOperation();
 }
 
 QString MainWindow::GetUsernameByPost(UserPost* post)
@@ -350,11 +360,21 @@ QPixmap MainWindow::GetUserImageByPost(UserPost* post)
     const FriendUser* friendUser = mCurrentUser->GetFriendById(post->GetPostUserId());
     if (friendUser != nullptr)
     {
+        if (friendUser->GetUserPicture() == nullptr)
+        {
+            pixmap = QPixmap(":/img/noimage.jpg");
+            return pixmap;
+        }
         pixmap.loadFromData(QByteArray::fromHex(*friendUser->GetUserPicture()));
     }
     else
     {
-         pixmap.loadFromData(QByteArray::fromHex(*mCurrentUser->GetUserPicture())); // case when post was written by me;
+        if (mCurrentUser->GetUserPicture() == nullptr)
+        {
+            pixmap = QPixmap(":/img/noimage.jpg");
+            return pixmap;
+        }
+        pixmap.loadFromData(QByteArray::fromHex(*mCurrentUser->GetUserPicture())); // case when post was written by me;
     }
 
     return pixmap;
@@ -527,7 +547,7 @@ void MainWindow::OnPostClicked(QListWidgetItem* item)
     int index = ui->postsList->row(item);
     UserPost* post = mPosts[index];
 
-    emit OpenPostWindow(post, GetUsernameByPost(post));
+    emit OpenPostWindow(mClientInstance, post, GetUsernameByPost(post));
 
     mPostWindow->show();
 }
@@ -535,6 +555,9 @@ void MainWindow::OnPostClicked(QListWidgetItem* item)
 void MainWindow::BackToMainWindowFromPostSlot()
 {
     mPostWindow->hide();
+    mClientInstance->SetCurrentWindow(this);
+
+    PerformGetPostsOperation();
 }
 
 QPixmap MainWindow::GetProperExerciseStatusIcon(Exercise::ExerciseStatuses status)

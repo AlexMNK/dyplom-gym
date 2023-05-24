@@ -17,7 +17,10 @@ void MainWindow::PerformGetUserDataOperation()
 
     MessagingProtocol::AcquireImageSize(serverImageSize, imageSize);
 
-    mCurrentUser->SetUserPicture(&DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize));     // RCV image by parts
+    if (imageSize != 0)
+    {
+        mCurrentUser->SetUserPicture(&DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize));     // RCV image by parts
+    }
 
     const json serverReply = mClientInstance->ReceiveDataFromServer();                                                              // RCV all remaining user data
 
@@ -54,7 +57,10 @@ void MainWindow::PerformGetUserFriendsOperation()
         MessagingProtocol::AcquireImageSize(serverImageSize, imageSize);
         FriendUser* friendUser = new FriendUser(friendInstance.first, friendInstance.second); // first - id, second - friends since
 
-        friendUser->SetUserPicture(&DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize));      // RCV image by parts
+        if (imageSize != 0)
+        {
+            friendUser->SetUserPicture(&DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize));      // RCV image by parts
+        }
 
         const json serverReply = mClientInstance->ReceiveDataFromServer();                                                             // RCV all remaining friend data
 
@@ -142,7 +148,12 @@ void MainWindow::PerformGetPostsOperation()
         MessagingProtocol::AcquireImageSize(serverImageSize, imageSize);
         UserPost* userPost = new UserPost(postId);
 
-        userPost->SetPostPicture(&DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize));         // RCV image by parts
+        qDebug() << "Got post with id " << postId << " and image size " << imageSize;
+
+        if (imageSize != 0)
+        {
+            userPost->SetPostPicture(&DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize));         // RCV image by parts
+        }
 
         const json serverReply = mClientInstance->ReceiveDataFromServer();                                                              // RCV all remaining post data
 

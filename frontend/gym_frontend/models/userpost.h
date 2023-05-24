@@ -27,7 +27,7 @@ private:
     int mPostUserId;
     QString mPostText;
     QString mPostTime;
-    QByteArray* mPostPicture;
+    QByteArray* mPostPicture{nullptr};
 };
 
 #endif // USERPOST_H
