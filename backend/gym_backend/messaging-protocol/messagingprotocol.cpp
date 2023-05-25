@@ -267,3 +267,21 @@ void MessagingProtocol::BuildSignUpReply(json& outMessage, const QString& status
         {"NewName", newName.toStdString()},
     };
 }
+
+//
+void MessagingProtocol::AcquireUpdateUserInfo(const json& message, int& outUserId, QString& outUserName, QString& outUserHashtag, QString& outUserEmail, QString& outUserPassword,
+                                    int& outUserAge, int& outUserHeight, float& outUserWeight, float& outUserBench, float& outUserSquat, float& outUserDeadlift)
+{
+    outUserId = message["UserId"];
+    outUserName = QString::fromStdString(message["UserName"]);
+    outUserHashtag = QString::fromStdString(message["UserHashtag"]);
+    outUserEmail = QString::fromStdString(message["UserEmail"]);
+    outUserPassword = QString::fromStdString(message["UserPassword"]);
+    outUserAge = message["Age"];
+    outUserHeight = message["Height"];
+    outUserWeight = message["Weight"];
+    outUserBench = message["Bench"];
+    outUserSquat = message["Squat"];
+    outUserDeadlift = message["Deadlift"];
+}
+

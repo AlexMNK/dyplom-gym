@@ -18,7 +18,7 @@ public:
 
     // Get main user data by Id
     static void BuildGetUserData(json& outMessage, int userId);
-    static void AcquireGetUserDataReply(const json& message, QString& outUserName, QString& outUserPassword, QString& outUserHashtag, QString& outUserEmail, float& outUserMaxBench, float& outUserMaxSquat, float& outUserMaxDeadlift, int& outUserHeight, float& outUserWeight, int &outUserAge, int &outUserPoints);
+    static void AcquireGetUserDataReply(const json& message, QString& outUserName, QString& outUserPassword, QString& outUserHashtag, QString& outUserEmail, int& outUserMaxBench, int& outUserMaxSquat, int& outUserMaxDeadlift, int& outUserHeight, int& outUserWeight, int &outUserAge, int &outUserPoints);
 
     // Get user friends by Id
     static void BuildGetUserFriends(json& outMessage, int userId);
@@ -87,6 +87,11 @@ public:
     // Sign Up
     static void BuildSignUp(json& outMessage, const QString& userName, const QString& userEmail, const QString& userPassword);
     static void AcquireSignUpReply(const json& message, QString& outStatus, QString& outNewName);
+
+    // UpdateUserInfo
+    static void BuildUpdateUserInfo(json& outMessage, int userId, const QString& userName, const QString& userHashtag, const QString& userEmail, const QString& userPassword,
+                                    int userAge, int userHeight, float userWeight, float userBench, float userSquat, float userDeadlift);
+    // no reply
 };
 
 #endif // MESSAGINGPROTOCOL_H

@@ -25,6 +25,7 @@ static bool HandleEditExerciseOperation(DBTransport* dbTransport, const json& us
 static bool HandleEditPostTextOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleDeletePostOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleSignUpOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleUpdateUserDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
@@ -41,6 +42,7 @@ static std::map<QString, Handler> messageHandlers =
     {"EditPostText", &HandleEditPostTextOperation},
     {"DeletePost", &HandleDeletePostOperation},
     {"SignUp", &HandleSignUpOperation},
+    {"UpdateUserInfo", &HandleUpdateUserDataOperation},
 };
 
 // -- Data part handlers -- //
@@ -575,6 +577,272 @@ bool HandleSignUpOperation(DBTransport* dbTransport, const json& userMessage, js
     };
 
     return false;
+}
+
+bool HandleUpdateUserDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    QString name, hash, email, password;
+    int userId, age, height;
+    float weight, bench, squat, deadlift;
+
+    bool ifNameExists = false;
+    bool ifHashExists = false;
+    bool ifHashDidNotChange = true;
+
+    MessagingProtocol::AcquireUpdateUserInfo(userMessage, userId, name, hash, email, password, age, height, weight, bench, squat, deadlift);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT * FROM Users WHERE user_name = '" + name + "' and id != " + QString::number(userId));
+
+    if (optionalQuery)
+    {
+        QSqlQuery query(std::move(optionalQuery.value()));
+        QString valueTest;
+
+        if (DBHelper::GetNextQueryResultRow(query))
+        {
+            valueTest = DBHelper::GetQueryData(query, 0).toString();
+        }
+
+        if (!valueTest.isEmpty())
+        {
+            ifNameExists = true;
+        }
+    }
+    else
+    {
+        outResultMessage = {
+            {"Status", "ERROR"},
+        };
+
+        return false;
+    }
+
+    int currentHashtagId = 0;
+
+    auto optionalQuery2 = dbTransport->ExecuteQuery("SELECT user_hashtag FROM Users WHERE id = " + QString::number(userId));
+
+    if (optionalQuery2)
+    {
+        QSqlQuery query(std::move(optionalQuery2.value()));
+
+        if (DBHelper::GetNextQueryResultRow(query))
+        {
+            currentHashtagId = DBHelper::GetQueryData(query, 0).toInt();
+        }
+    }
+
+    auto optionalQuery3 = dbTransport->ExecuteQuery("SELECT * FROM User_Hashtags WHERE hashtag = '" + hash + "'");
+
+    if (optionalQuery3)
+    {
+        QSqlQuery query(std::move(optionalQuery3.value()));
+        QString valueTest;
+
+        if (DBHelper::GetNextQueryResultRow(query))
+        {
+            valueTest = DBHelper::GetQueryData(query, 0).toString();
+        }
+
+        if (!valueTest.isEmpty())
+        {
+            if (valueTest.toInt() != currentHashtagId)
+            {
+                ifHashExists = true;
+            }
+        }
+        else
+        {
+            ifHashDidNotChange = false;
+        }
+    }
+    else
+    {
+        outResultMessage = {
+            {"Status", "ERROR"},
+        };
+
+        return false;
+    }
+
+    if (!ifNameExists && !ifHashExists)
+    {
+        if (!ifHashDidNotChange) // if hash should be updated
+        {
+            auto optionalQuery4 = dbTransport->ExecuteQuery("Declare @Hash_ID int "
+                                                            "INSERT INTO User_Hashtags "
+                                                            "VALUES ('" + hash + "') "
+                                                            "SET @Hash_ID = SCOPE_IDENTITY() "
+                                                            "UPDATE Users SET "
+                                                            "user_name = '" + name + "', "
+                                                            "user_email = '" + email + "', "
+                                                            "user_password = '" + password + "', user_hashtag = @Hash_ID, "
+                                                            "user_max_bench = " + QString::number(bench) + ", "
+                                                            "user_max_squat = " + QString::number(squat) + ", "
+                                                            "user_max_deadlift = " + QString::number(deadlift) + ", "
+                                                            "user_height = " + QString::number(height) + ", "
+                                                            "user_weight = " + QString::number(weight) + ", "
+                                                            "user_age = " + QString::number(age) + " WHERE id = " + QString::number(userId));
+
+            if (optionalQuery4)
+            {
+                outResultMessage = {
+                    {"Status", "OK"},
+                };
+
+                return true;
+            }
+
+            outResultMessage = {
+                {"Status", "ERROR"},
+            };
+
+            return false;
+        }
+        else
+        {
+            auto optionalQuery4 = dbTransport->ExecuteQuery("UPDATE Users SET "
+                                                            "user_name = '" + name + "', "
+                                                            "user_email = '" + email + "', "
+                                                            "user_password = '" + password + "', "
+                                                            "user_max_bench = " + QString::number(bench) + ", "
+                                                            "user_max_squat = " + QString::number(squat) + ", "
+                                                            "user_max_deadlift = " + QString::number(deadlift) + ", "
+                                                            "user_height = " + QString::number(height) + ", "
+                                                            "user_weight = " + QString::number(weight) + ", "
+                                                            "user_age = " + QString::number(age) + " WHERE id = " + QString::number(userId));
+
+            if (optionalQuery4)
+            {
+                outResultMessage = {
+                    {"Status", "OK"},
+                };
+
+                return true;
+            }
+
+            outResultMessage = {
+                {"Status", "ERROR"},
+            };
+
+            return false;
+        }
+    }
+    else if (ifNameExists && !ifHashExists)
+    {
+        if (!ifHashDidNotChange) // if hash should be updated
+        {
+            auto optionalQuery4 = dbTransport->ExecuteQuery("Declare @Hash_ID int "
+                                                            "INSERT INTO User_Hashtags "
+                                                            "VALUES ('" + hash + "') "
+                                                            "SET @Hash_ID = SCOPE_IDENTITY() "
+                                                            "UPDATE Users SET "
+                                                            "user_email = '" + email + "', "
+                                                            "user_password = '" + password + "', user_hashtag = @Hash_ID, "
+                                                            "user_max_bench = " + QString::number(bench) + ", "
+                                                            "user_max_squat = " + QString::number(squat) + ", "
+                                                            "user_max_deadlift = " + QString::number(deadlift) + ", "
+                                                            "user_height = " + QString::number(height) + ", "
+                                                            "user_weight = " + QString::number(weight) + ", "
+                                                            "user_age = " + QString::number(age) + " WHERE id = " + QString::number(userId));
+
+            if (optionalQuery4)
+            {
+                outResultMessage = {
+                    {"Status", "NameExists"},
+                };
+
+                return true;
+            }
+
+            outResultMessage = {
+                {"Status", "ERROR"},
+            };
+
+            return false;
+        }
+        else
+        {
+            auto optionalQuery4 = dbTransport->ExecuteQuery("UPDATE Users SET "
+                                                            "user_email = '" + email + "', "
+                                                            "user_password = '" + password + "', "
+                                                            "user_max_bench = " + QString::number(bench) + ", "
+                                                            "user_max_squat = " + QString::number(squat) + ", "
+                                                            "user_max_deadlift = " + QString::number(deadlift) + ", "
+                                                            "user_height = " + QString::number(height) + ", "
+                                                            "user_weight = " + QString::number(weight) + ", "
+                                                            "user_age = " + QString::number(age) + " WHERE id = " + QString::number(userId));
+
+            if (optionalQuery4)
+            {
+                outResultMessage = {
+                    {"Status", "NameExists"},
+                };
+
+                return true;
+            }
+
+            outResultMessage = {
+                {"Status", "ERROR"},
+            };
+
+            return false;
+        }
+    }
+    else if (!ifNameExists && ifHashExists)
+    {
+        auto optionalQuery4 = dbTransport->ExecuteQuery("UPDATE Users SET "
+                                                        "user_name = '" + name + "', "
+                                                        "user_email = '" + email + "', "
+                                                        "user_password = '" + password + "', "
+                                                        "user_max_bench = " + QString::number(bench) + ", "
+                                                        "user_max_squat = " + QString::number(squat) + ", "
+                                                        "user_max_deadlift = " + QString::number(deadlift) + ", "
+                                                        "user_height = " + QString::number(height) + ", "
+                                                        "user_weight = " + QString::number(weight) + ", "
+                                                        "user_age = " + QString::number(age) + " WHERE id = " + QString::number(userId));
+
+        if (optionalQuery4)
+        {
+            outResultMessage = {
+                {"Status", "HashExists"},
+            };
+
+            return true;
+        }
+
+        outResultMessage = {
+            {"Status", "ERROR"},
+        };
+
+        return false;
+    }
+    else
+    {
+        auto optionalQuery4 = dbTransport->ExecuteQuery("UPDATE Users SET "
+                                                        "user_email = '" + email + "', "
+                                                        "user_password = '" + password + "', "
+                                                        "user_max_bench = " + QString::number(bench) + ", "
+                                                        "user_max_squat = " + QString::number(squat) + ", "
+                                                        "user_max_deadlift = " + QString::number(deadlift) + ", "
+                                                        "user_height = " + QString::number(height) + ", "
+                                                        "user_weight = " + QString::number(weight) + ", "
+                                                        "user_age = " + QString::number(age) + " WHERE id = " + QString::number(userId));
+
+        if (optionalQuery4)
+        {
+            outResultMessage = {
+                {"Status", "NameHashExists"},
+            };
+
+            return true;
+        }
+
+        outResultMessage = {
+            {"Status", "ERROR"},
+        };
+
+        return false;
+    }
 }
 
 // -------------------------------------------- DATA PART HANDLERS ---------------------------------------------------//

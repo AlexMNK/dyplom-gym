@@ -38,6 +38,13 @@ void MainWindow::SetupUiDesign()
     ui->userEditProfile->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
     ui->userSaveProfile->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
 
+    ui->userHeightEdit->setValidator( new QIntValidator(0, 250, this) );
+    ui->userWeightEdit->setValidator( new QIntValidator(0, 500, this) );
+    ui->userAgeEdit->setValidator( new QIntValidator(0, 120, this) );
+    ui->userBenchEdit->setValidator( new QIntValidator(0.0, 1000, this) );
+    ui->userSquatEdit->setValidator( new QIntValidator(0.0, 1000, this) );
+    ui->userDeadliftEdit->setValidator( new QIntValidator(0.0, 1000, this) );
+
     MakeProfileFieldsNonEdit();
 
     this->setStyleSheet("background-color: white;");
@@ -99,7 +106,7 @@ void MainWindow::FillCurentUserDataFields()
     ui->userRankLabel->setText("Rank: " + GetProperRankName(mCurrentUser->GetUserPoints()));
     ui->userHeightEdit->setText(QString::number(mCurrentUser->GetUserHeight()) + " sm");
     ui->userWeightEdit->setText(QString::number(mCurrentUser->GetUserWeight()) + " kg");
-    ui->userAgeEdit->setText(QString::number(mCurrentUser->GetUserAge()));
+    ui->userAgeEdit->setText(mCurrentUser->GetUserAge() != 0 ? QString::number(mCurrentUser->GetUserAge()) : "Not stated");
     ui->userBenchEdit->setText(mCurrentUser->GetUserMaxBench() != 0 ? QString::number(mCurrentUser->GetUserMaxBench()) + " kg" : "Not stated");
     ui->userSquatEdit->setText(mCurrentUser->GetUserMaxSquat() != 0 ? QString::number(mCurrentUser->GetUserMaxSquat()) + " kg" : "Not stated");
     ui->userDeadliftEdit->setText(mCurrentUser->GetUserMaxDeadlift() != 0 ? QString::number(mCurrentUser->GetUserMaxDeadlift()) + " kg" : "Not stated");
@@ -234,6 +241,7 @@ void MainWindow::MakeProfileFieldsEdit()
 
     ui->userHeightEdit->setText(QString::number(mCurrentUser->GetUserHeight()));
     ui->userWeightEdit->setText(QString::number(mCurrentUser->GetUserWeight()));
+    ui->userAgeEdit->setText(QString::number(mCurrentUser->GetUserAge()));
     ui->userBenchEdit->setText(QString::number(mCurrentUser->GetUserMaxBench()));
     ui->userSquatEdit->setText(QString::number(mCurrentUser->GetUserMaxSquat()));
     ui->userDeadliftEdit->setText(QString::number(mCurrentUser->GetUserMaxDeadlift()));

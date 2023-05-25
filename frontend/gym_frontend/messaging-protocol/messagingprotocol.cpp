@@ -30,8 +30,8 @@ void MessagingProtocol::BuildGetUserData(json& outMessage, int userId)
     };
 }
 
-void MessagingProtocol::AcquireGetUserDataReply(const json& message, QString& outUserName, QString& outUserPassword, QString& outUserHashtag, QString& outUserEmail, float& outUserMaxBench
-                                                    , float& outUserMaxSquat, float& outUserMaxDeadlift, int& outUserHeight, float& outUserWeight, int &outUserAge, int &outUserPoints)
+void MessagingProtocol::AcquireGetUserDataReply(const json& message, QString& outUserName, QString& outUserPassword, QString& outUserHashtag, QString& outUserEmail, int& outUserMaxBench
+                                                    , int& outUserMaxSquat, int& outUserMaxDeadlift, int& outUserHeight, int& outUserWeight, int &outUserAge, int &outUserPoints)
 {
     outUserName = QString::fromStdString(message["Name"]);
     outUserPassword = QString::fromStdString(message["Password"]);
@@ -301,6 +301,27 @@ void MessagingProtocol::AcquireSignUpReply(const json& message, QString& outStat
     {
         outNewName = QString::fromStdString(message["NewName"]);
     }
+}
+
+//
+void MessagingProtocol::BuildUpdateUserInfo(json& outMessage, int userId, const QString& userName, const QString& userHashtag, const QString& userEmail, const QString& userPassword,
+                                            int userAge, int userHeight, float userWeight, float userBench, float userSquat, float userDeadlift)
+{
+    outMessage =
+    {
+        {"Operation", "UpdateUserInfo"},
+        {"UserId", userId},
+        {"UserName", userName.toStdString()},
+        {"UserHashtag", userHashtag.toStdString()},
+        {"UserEmail", userEmail.toStdString()},
+        {"UserPassword", userPassword.toStdString()},
+        {"Age", userAge},
+        {"Height", userHeight},
+        {"Weight", userWeight},
+        {"Bench", userBench},
+        {"Squat", userSquat},
+        {"Deadlift", userDeadlift},
+    };
 }
 
 

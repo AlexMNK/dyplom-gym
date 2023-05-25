@@ -11,11 +11,11 @@ public:
     QString GetUserEmail() const { return mUserEmail; }
     QString GetUserHashtag() const { return mUserHashtag; }
     QByteArray* GetUserPicture() const { return mUserProfilePicture; }
-    float GetUserMaxBench() const { return mUserMaxBench; }
-    float GetUserMaxSquat() const { return mUserMaxSquat; }
-    float GetUserMaxDeadlift() const { return mUserMaxDeadlift; }
+    int GetUserMaxBench() const { return mUserMaxBench; }
+    int GetUserMaxSquat() const { return mUserMaxSquat; }
+    int GetUserMaxDeadlift() const { return mUserMaxDeadlift; }
     int GetUserHeight() const { return mUserHeight; }
-    float GetUserWeight() const { return mUserWeight; }
+    int GetUserWeight() const { return mUserWeight; }
     int GetUserAge() const { return mUserAge; }
     int GetUserPoints() const { return mUserPoints; }
 
@@ -27,11 +27,11 @@ protected:
     QString mUserEmail;
     QString mUserHashtag;
     QByteArray* mUserProfilePicture{nullptr};
-    float mUserMaxBench;
-    float mUserMaxSquat;
-    float mUserMaxDeadlift;
+    int mUserMaxBench;
+    int mUserMaxSquat;
+    int mUserMaxDeadlift;
     int mUserHeight;
-    float mUserWeight;
+    int mUserWeight;
     int mUserAge;
     int mUserPoints;
 };

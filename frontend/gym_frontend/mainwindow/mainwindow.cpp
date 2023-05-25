@@ -101,13 +101,84 @@ void MainWindow::on_userEditProfile_clicked()
 
 void MainWindow::on_userSaveProfile_clicked()
 {
-    // todo - UPDATE operation
+    bool ifInvalidFields = false;
 
-    ui->userEditProfile->setText("Edit profile");
-    ui->userEditProfile->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
-    mIsEditProfileButton = true;
-    MakeProfileFieldsNonEdit();
-    FillCurentUserDataFields();
+    if (ui->userNameEdit->text().isEmpty() ||
+        ui->userHashEdit->text().isEmpty() ||
+        ui->userEmailEdit->text().isEmpty() ||
+        ui->userPasswordEdit->text().isEmpty())
+    {
+         QMessageBox::warning(this, "Invalid data", "You cannot leave user fields empty!");
+         ifInvalidFields = true;
+    }
+
+    if (ui->userHashEdit->text()[0] != '@' &&  !ui->userHashEdit->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Invalid data", "Hashtag should stard with @ character!");
+        ifInvalidFields = true;
+    }
+
+    const QRegularExpression regex("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", QRegularExpression::CaseInsensitiveOption);
+    if(!regex.match(ui->userEmailEdit->text()).hasMatch() && !ui->userEmailEdit->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Invalid data", "Invalid format of an email!");
+        ifInvalidFields = true;
+    }
+
+    if (ifInvalidFields) // reset fields and do not perform operation
+    {
+        ui->userEditProfile->setText("Edit profile");
+        ui->userEditProfile->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+        mIsEditProfileButton = true;
+        MakeProfileFieldsNonEdit();
+        FillCurentUserDataFields();
+    }
+    else // send update request
+    {
+        int age = ui->userAgeEdit->text().isEmpty() ? 0 : ui->userAgeEdit->text().toInt();
+        int height = ui->userHeightEdit->text().isEmpty() ? 0 : ui->userHeightEdit->text().toInt();
+        float weight = ui->userWeightEdit->text().isEmpty() ? 0 : ui->userWeightEdit->text().toFloat();
+        float bench = ui->userBenchEdit->text().isEmpty() ? 0 : ui->userBenchEdit->text().toFloat();
+        float squat = ui->userSquatEdit->text().isEmpty() ? 0 : ui->userSquatEdit->text().toFloat();
+        float deadlift = ui->userDeadliftEdit->text().isEmpty() ? 0 : ui->userDeadliftEdit->text().toFloat();
+
+        json updateUserInfo;
+
+        MessagingProtocol::BuildUpdateUserInfo(updateUserInfo, mCurrentUser->GetUserId(), ui->userNameEdit->text(), ui->userHashEdit->text(), ui->userEmailEdit->text(),
+                                               ui->userPasswordEdit->text(), age, height, weight, bench, squat, deadlift);
+
+        mClientInstance->SendDataToServer(updateUserInfo);                      // SEND update request
+
+        const json reply = mClientInstance->ReceiveDataFromServer();            // RCV status
+
+        if (QString::fromStdString(reply["Status"]) == "NameExists")
+        {
+            QMessageBox::information(this, "Update data", "User Profile was updated except for user name as the same name already exists");
+        }
+        else if (QString::fromStdString(reply["Status"]) == "HashExists")
+        {
+            QMessageBox::information(this, "Update data", "User Profile was updated except for user hashtag as the same hashtag already exists");
+        }
+        else if (QString::fromStdString(reply["Status"]) == "NameHashExists")
+        {
+            QMessageBox::information(this, "Update data", "User Profile was updated except for user name and hashtag as the same name and hashtag already exist");
+        }
+        else if (QString::fromStdString(reply["Status"]) == "Error")
+        {
+            QMessageBox::warning(this, "Failure", "Failed to update User Profile");
+            return;
+        }
+        else // OK
+        {
+            QMessageBox::information(this, "Update data", "User Profile was successfully updated!");
+        }
+
+        ui->userEditProfile->setText("Edit profile");
+        ui->userEditProfile->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
+        mIsEditProfileButton = true;
+        MakeProfileFieldsNonEdit();
+        PerformGetUserDataOperation();
+    }
 }
 
 

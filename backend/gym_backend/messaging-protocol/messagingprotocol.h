@@ -88,6 +88,11 @@ public:
     // Sign Up
     static void AcquireSignUp(const json& message, QString& outUserName, QString& outUserEmail, QString& outUserPassword);
     static void BuildSignUpReply(json& outMessage, const QString& status, const QString& newName);
+
+    // UpdateUserInfo
+    static void AcquireUpdateUserInfo(const json& message, int& outUserId, QString& outUserName, QString& outUserHashtag, QString& outUserEmail, QString& outUserPassword,
+                                        int& outUserAge, int& outUserHeight, float& outUserWeight, float& outUserBench, float& outUserSquat, float& outUserDeadlift);
+    // no reply
 };
 
 #endif // MESSAGINGPROTOCOL_H
