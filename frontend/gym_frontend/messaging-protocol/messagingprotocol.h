@@ -83,6 +83,10 @@ public:
     // Delete post by id
     static void BuildDeletePost(json& outMessage, int postId);
     // no reply
+
+    // Sign Up
+    static void BuildSignUp(json& outMessage, const QString& userName, const QString& userEmail, const QString& userPassword);
+    static void AcquireSignUpReply(const json& message, QString& outStatus, QString& outNewName);
 };
 
 #endif // MESSAGINGPROTOCOL_H

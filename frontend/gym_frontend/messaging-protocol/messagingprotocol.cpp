@@ -282,6 +282,27 @@ void MessagingProtocol::BuildDeletePost(json& outMessage, int postId)
     };
 }
 
+//
+void MessagingProtocol::BuildSignUp(json& outMessage, const QString& userName, const QString& userEmail, const QString& userPassword)
+{
+    outMessage =
+    {
+        {"Operation", "SignUp"},
+        {"UserName", userName.toStdString()},
+        {"UserEmail", userEmail.toStdString()},
+        {"UserPassword", userPassword.toStdString()},
+    };
+}
+
+void MessagingProtocol::AcquireSignUpReply(const json& message, QString& outStatus, QString& outNewName)
+{
+    outStatus = QString::fromStdString(message["Status"]);
+    if (outStatus == "NewName")
+    {
+        outNewName = QString::fromStdString(message["NewName"]);
+    }
+}
+
 
 
 

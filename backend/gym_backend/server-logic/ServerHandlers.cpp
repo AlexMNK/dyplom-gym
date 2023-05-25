@@ -24,6 +24,7 @@ static bool HandleDeleteExerciseOperation(DBTransport* dbTransport, const json& 
 static bool HandleEditExerciseOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleEditPostTextOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleDeletePostOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleSignUpOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
@@ -39,6 +40,7 @@ static std::map<QString, Handler> messageHandlers =
     {"EditExercise", &HandleEditExerciseOperation},
     {"EditPostText", &HandleEditPostTextOperation},
     {"DeletePost", &HandleDeletePostOperation},
+    {"SignUp", &HandleSignUpOperation},
 };
 
 // -- Data part handlers -- //
@@ -434,6 +436,138 @@ bool HandleDeletePostOperation(DBTransport* dbTransport, const json& userMessage
         };
 
         return true;
+    }
+
+    outResultMessage = {
+        {"Status", "ERROR"},
+    };
+
+    return false;
+}
+
+bool HandleSignUpOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    QString name, email, password;
+
+    MessagingProtocol::AcquireSignUp(userMessage, name, email, password);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT * FROM Users WHERE user_name = '" + name + "'");
+
+    if (optionalQuery)
+    {
+        QSqlQuery query(std::move(optionalQuery.value()));
+        QString valueTest;
+
+        if (DBHelper::GetNextQueryResultRow(query))
+        {
+            valueTest = DBHelper::GetQueryData(query, 0).toString();
+        }
+
+        if (!valueTest.isEmpty()) // case when user name is taken
+        {
+            int index = 1;
+            while (true)
+            {
+                auto optionalQuery = dbTransport->ExecuteQuery("SELECT * FROM Users WHERE user_name = '" + name + QString::number(index) + "'");
+
+                if (optionalQuery)
+                {
+                    QSqlQuery query(std::move(optionalQuery.value()));
+                    QString valueTest;
+
+                    if (DBHelper::GetNextQueryResultRow(query))
+                    {
+                        valueTest = DBHelper::GetQueryData(query, 0).toString();
+                    }
+
+                    if (valueTest.isEmpty())
+                    {
+                        MessagingProtocol::BuildSignUpReply(outResultMessage, "NewName", name.append(QString::number(index)));
+                        return true;
+                    }
+                    else
+                    {
+                        index++;
+                    }
+                }
+            }
+        }
+        else // if name is unique
+        {
+            QString hashtag = '@' + name;
+
+            auto optionalQuery = dbTransport->ExecuteQuery("SELECT * FROM User_Hashtags WHERE hashtag = '" + hashtag + "'");
+
+            if (optionalQuery)
+            {
+                QSqlQuery query(std::move(optionalQuery.value()));
+                QString valueTest;
+
+                if (DBHelper::GetNextQueryResultRow(query))
+                {
+                    valueTest = DBHelper::GetQueryData(query, 0).toString();
+                }
+
+                if (!valueTest.isEmpty()) // case when hashtag is taken
+                {
+                    int index = 1;
+                    while (true)
+                    {
+                        auto optionalQuery = dbTransport->ExecuteQuery("SELECT * FROM User_Hashtags WHERE hashtag = '" + hashtag + QString::number(index) + "'");
+
+                        if (optionalQuery)
+                        {
+                            QSqlQuery query(std::move(optionalQuery.value()));
+                            QString valueTest;
+
+                            if (DBHelper::GetNextQueryResultRow(query))
+                            {
+                                valueTest = DBHelper::GetQueryData(query, 0).toString();
+                            }
+
+                            if (valueTest.isEmpty())
+                            {
+                                hashtag = hashtag.append(QString::number(index));
+                                break;
+                            }
+                            else
+                            {
+                                index++;
+                            }
+                        }
+                    }
+                }
+
+                auto optionalQuery = dbTransport->ExecuteQuery("Declare @Hash_ID int "
+                                                               "INSERT INTO User_Hashtags "
+                                                               "VALUES ('" + hashtag + "') "
+                                                               "SET @Hash_ID = SCOPE_IDENTITY() "
+                                                               "INSERT INTO Users "
+                                                               "VALUES ('" + name + "', '" + email + "', '" + password + "', @Hash_ID, "
+                                                               "NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0)");
+
+                if (optionalQuery)
+                {
+                    outResultMessage = {
+                        {"Status", "OK"},
+                    };
+
+                    return true;
+                }
+
+                outResultMessage = {
+                    {"Status", "ERROR"},
+                };
+
+                return false;
+            }
+
+            outResultMessage = {
+                {"Status", "ERROR"},
+            };
+
+            return false;
+        }
     }
 
     outResultMessage = {

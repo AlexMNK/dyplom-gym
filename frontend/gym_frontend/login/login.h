@@ -41,6 +41,8 @@ private slots:
 
     void on_GoLogInButton_clicked();
 
+    void on_SignUp_clicked();
+
 private:
     void CreateMainWindow();
     void HideAllErrorLabels();
