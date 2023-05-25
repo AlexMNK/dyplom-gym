@@ -29,6 +29,10 @@ private slots:
     void on_backButton_clicked();
 
 private:
+    QPixmap GetProperRankIcon(int points);
+    QString GetProperRankName(int points);
+
+private:
     Ui::FriendWindow *ui;
 
     Client* mClientInstance;
