@@ -390,14 +390,21 @@ QPixmap MainWindow::GetUserImageByPost(UserPost* post)
 
 QString MainWindow::GetFormattedPostmessage(UserPost* post)
 {
-    // TODO - improve this function - add * days ago -> if more than some limit - show date
-
     QString message = GetUsernameByPost(post) + ": " + post->GetPostText();
 
-    if (message.size() > 55)
+    if (message.size() > 40)
     {
-        message.truncate(50);
+        message.truncate(40);
         message.append("...");
+        message = message.leftJustified(50, ' ');
+        QFont font("Times New Roman", 16);
+        QFontMetrics fm(font);
+        int pixelsWide = fm.horizontalAdvance(message);
+
+        while(pixelsWide < 390)
+        {
+            pixelsWide = fm.horizontalAdvance(message.append(" "));
+        }
     }
     else
     {
