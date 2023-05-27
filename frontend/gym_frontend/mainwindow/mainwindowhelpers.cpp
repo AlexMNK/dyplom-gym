@@ -18,6 +18,7 @@ void MainWindow::SetupUiDesign()
     ui->postsButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
     ui->addPostButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
     ui->signOutButton->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkred;}");
+    ui->addFriend->setStyleSheet("QPushButton {border: 1px solid black; } QPushButton:hover { border: 1px solid darkgreen;}");
 
     // my profile fields
     ui->userNameLabel->setStyleSheet("border: none;");

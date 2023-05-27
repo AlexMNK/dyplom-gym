@@ -79,7 +79,7 @@ QLineEdit { border: 1px solid black }</string>
    <widget class="QLabel" name="FriendLabel">
     <property name="geometry">
      <rect>
-      <x>1040</x>
+      <x>990</x>
       <y>10</y>
       <width>71</width>
       <height>51</height>
@@ -1584,6 +1584,22 @@ QListWidget::item:selected  {
     </property>
     <property name="styleSheet">
      <string notr="true">color:black; border: 1px solid black;</string>
+    </property>
+    <property name="text">
+     <string>Add</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="addFriend">
+    <property name="geometry">
+     <rect>
+      <x>1070</x>
+      <y>20</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="text">
      <string>Add</string>
