@@ -92,6 +92,10 @@ public:
     static void BuildUpdateUserInfo(json& outMessage, int userId, const QString& userName, const QString& userHashtag, const QString& userEmail, const QString& userPassword,
                                     int userAge, int userHeight, float userWeight, float userBench, float userSquat, float userDeadlift);
     // no reply
+
+    // Get Friend requests by user id
+    static void BuildGetUserFriendRequests(json& outMessage, int userId);
+    static void AcquireGetUserFriendRequestsReply(const json& message, std::vector<std::pair<int, int>>& outIds);
 };
 
 #endif // MESSAGINGPROTOCOL_H

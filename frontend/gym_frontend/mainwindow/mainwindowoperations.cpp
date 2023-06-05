@@ -74,6 +74,48 @@ void MainWindow::PerformGetUserFriendsOperation()
     FillFriendList();
 }
 
+void MainWindow::PerformGetUserFriendRequestsOperation()
+{
+    mCurrentUser->GetUserFriendRequests().clear(); // clr user friend requests before assigning again
+
+    std::vector<std::pair<int, int>> userFriendRequests;
+
+    json userFriendRequestsJson;
+    MessagingProtocol::BuildGetUserFriendRequests(userFriendRequestsJson, mCurrentUser->GetUserId());
+
+    mClientInstance->SendDataToServer(userFriendRequestsJson);                                                             // SEND user id
+
+    const json serverFriendsRequestIds = mClientInstance->ReceiveDataFromServer();                                         // RCV friend requests ids
+
+    MessagingProtocol::AcquireGetUserFriendRequestsReply(serverFriendsRequestIds, userFriendRequests);
+
+    for (const auto& friendRequestInstance : userFriendRequests)       // cycle to get all friend requests data
+    {
+        int imageSize;
+        json getUserDataMessage;
+        MessagingProtocol::BuildGetUserData(getUserDataMessage, friendRequestInstance.first);
+
+        mClientInstance->SendDataToServer(getUserDataMessage);                                                                         // SEND friend id
+
+        const json serverImageSize = mClientInstance->ReceiveDataFromServer();                                                         // RCV image size
+
+        MessagingProtocol::AcquireImageSize(serverImageSize, imageSize);
+        FriendUser* friendUser = new FriendUser(friendRequestInstance.first, "NULL"); // first - id, second - ignore
+
+        if (imageSize != 0)
+        {
+            friendUser->SetUserPicture(&DataPartImageHelper::ReceiveImageByParts(mClientInstance->GetSocketConnection(), imageSize));      // RCV image by parts
+        }
+
+        const json serverReply = mClientInstance->ReceiveDataFromServer();                                                             // RCV all remaining friend data
+
+        friendUser->AcquireGetUserDataReply(serverReply, FriendUser::FriendStatusRequestedByHim);
+        mCurrentUser->GetUserFriendRequests().push_back(std::make_pair(friendUser, friendRequestInstance.second));
+    }
+
+    FillFriendRequestsList();
+}
+
 void MainWindow::PerformUpdateUserImageOperation()
 {
     const QString file_name = QFileDialog::getOpenFileName(this, "Choose image");

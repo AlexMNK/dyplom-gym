@@ -292,6 +292,18 @@ void MainWindow::FillFriendList()
     }
 }
 
+void MainWindow::FillFriendRequestsList()
+{
+    ui->friendList_2->clear();
+
+    for (const auto& friendRequestInstance : mCurrentUser->GetUserFriendRequests())
+    {
+        QListWidgetItem *newItem = new QListWidgetItem;
+        newItem->setText(friendRequestInstance.first->GetUserName() + " " + friendRequestInstance.first->GetUserHashtag());
+        ui->friendList_2->addItem(newItem);
+    }
+}
+
 void MainWindow::CreateFriendWindow()
 {
     if (!mIsFriendWindowCreated)

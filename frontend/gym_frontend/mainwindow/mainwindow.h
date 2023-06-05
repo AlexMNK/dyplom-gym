@@ -99,6 +99,7 @@ private: // helpers
     QPixmap GetUserImageByPost(UserPost* post);
     QString GetFormattedPostmessage(UserPost* post);
     void FillFriendList();
+    void FillFriendRequestsList();
     void CreateFriendWindow();
     void CreatePostWindow();
     void CreateExerciseWindow();
@@ -128,6 +129,7 @@ private: // user operations
     void PerformGetUserDataOperation();
     void PerformUpdateUserImageOperation();
     void PerformGetUserFriendsOperation();
+    void PerformGetUserFriendRequestsOperation();
     void PerformGetPostsOperation();
     void PerformGetUserExercises();
 

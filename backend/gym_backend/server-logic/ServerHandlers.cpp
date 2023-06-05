@@ -14,6 +14,7 @@ typedef bool (*DataPartHandler)(SocketConnection* socketConnection, DBTransport*
 
 static bool HandleAuthorizeOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetUserFriendsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleGetUserFriendRequestsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetPostsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetUserExercisesOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleGetExerciseDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
@@ -31,6 +32,7 @@ static std::map<QString, Handler> messageHandlers =
 {
     {"Authorize", &HandleAuthorizeOperation},
     {"GetUserFriends", &HandleGetUserFriendsOperation},
+    {"GetUserFriendRequests", &HandleGetUserFriendRequestsOperation},
     {"GetPosts", &HandleGetPostsOperation},
     {"GetUserExercises", &HandleGetUserExercisesOperation},
     {"GetExerciseData", &HandleGetExerciseDataOperation},
@@ -164,6 +166,30 @@ bool HandleGetUserFriendsOperation(DBTransport* dbTransport, const json& userMes
         }
 
         MessagingProtocol::BuildGetUserFriendsReply(outResultMessage, friendIds);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool HandleGetUserFriendRequestsOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId;
+    std::vector<std::pair<int, int>> friendRequestIds;
+    MessagingProtocol::AcquirGetUserFriendRequests(userMessage, userId);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("SELECT id, requester_user_id FROM Friendships WHERE responder_user_id = " + QString::number(userId) + " AND STATUS = 1");
+    if (optionalQuery)
+    {
+        QSqlQuery query(std::move(optionalQuery.value()));
+
+        while (DBHelper::GetNextQueryResultRow(query))
+        {
+            friendRequestIds.push_back(std::make_pair(DBHelper::GetQueryData(query, 1).toInt(), DBHelper::GetQueryData(query, 0).toInt()));
+        }
+
+        MessagingProtocol::BuildGetUserFriendRequestsReply(outResultMessage, friendRequestIds);
 
         return true;
     }

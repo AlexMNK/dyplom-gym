@@ -65,6 +65,7 @@ void MainWindow::AuthorizationSuccess(Client* clientInstance, int userId)
 
     PerformGetUserDataOperation();
     PerformGetUserFriendsOperation();
+    PerformGetUserFriendRequestsOperation();
     PerformGetPostsOperation();
     PerformGetUserExercises();
 

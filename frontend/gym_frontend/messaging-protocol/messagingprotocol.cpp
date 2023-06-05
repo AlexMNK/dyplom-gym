@@ -324,7 +324,25 @@ void MessagingProtocol::BuildUpdateUserInfo(json& outMessage, int userId, const 
     };
 }
 
+//
+void MessagingProtocol::BuildGetUserFriendRequests(json& outMessage, int userId)
+{
+    outMessage =
+    {
+        {"Operation", "GetUserFriendRequests"},
+        {"UserId", userId},
+    };
+}
 
+void MessagingProtocol::AcquireGetUserFriendRequestsReply(const json& message, std::vector<std::pair<int, int>>& outIds)
+{
+    int size = message["FriendRequests"].size();
+
+    for(int i = 0; i < size; ++i)
+    {
+        outIds.push_back(std::make_pair(message["FriendRequests"][i], message["RequestIds"][i]));
+    }
+}
 
 
 

@@ -21,6 +21,7 @@ public:
 
     QString GetUserPassword() { return mUserPassword; }
     std::vector<FriendUser*>& GetUserFriends() { return mUserFriends; }
+    std::vector<std::pair<FriendUser*, int>>& GetUserFriendRequests() { return mUserFriendRequests; }
 
     void BuildGetUserDataRequest(json& outMessage);
     void AcquireGetUserDataReply(const json& message);
@@ -31,6 +32,7 @@ private:
 
     QString mUserPassword;
     std::vector<FriendUser*> mUserFriends;
+    std::vector<std::pair<FriendUser*, int>> mUserFriendRequests;
 };
 
 #endif // MAINUSER_H
