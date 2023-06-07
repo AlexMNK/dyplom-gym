@@ -27,6 +27,8 @@ static bool HandleEditPostTextOperation(DBTransport* dbTransport, const json& us
 static bool HandleDeletePostOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleSignUpOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleUpdateUserDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleReplyFriendRequestOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleDeleteFriendOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
@@ -45,6 +47,8 @@ static std::map<QString, Handler> messageHandlers =
     {"DeletePost", &HandleDeletePostOperation},
     {"SignUp", &HandleSignUpOperation},
     {"UpdateUserInfo", &HandleUpdateUserDataOperation},
+    {"ReplyFriendRequest", &HandleReplyFriendRequestOperation},
+    {"DeleteFriend", &HandleDeleteFriendOperation},
 };
 
 // -- Data part handlers -- //
@@ -177,7 +181,7 @@ bool HandleGetUserFriendRequestsOperation(DBTransport* dbTransport, const json& 
 {
     int userId;
     std::vector<std::pair<int, int>> friendRequestIds;
-    MessagingProtocol::AcquirGetUserFriendRequests(userMessage, userId);
+    MessagingProtocol::AcquireGetUserFriendRequests(userMessage, userId);
 
     auto optionalQuery = dbTransport->ExecuteQuery("SELECT id, requester_user_id FROM Friendships WHERE responder_user_id = " + QString::number(userId) + " AND STATUS = 1");
     if (optionalQuery)
@@ -869,6 +873,82 @@ bool HandleUpdateUserDataOperation(DBTransport* dbTransport, const json& userMes
 
         return false;
     }
+}
+
+bool HandleReplyFriendRequestOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int requestId;
+    bool status;
+
+    MessagingProtocol::AcquireReplyFriendRequest(userMessage, requestId, status);
+
+    if (status)
+    {
+        auto optionalQuery = dbTransport->ExecuteQuery("UPDATE Friendships "
+                                                       "SET status = 2, friends_since = '" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm") + "' "
+                                                       "WHERE id = " + QString::number(requestId));
+
+        if (optionalQuery)
+        {
+            outResultMessage = {
+                {"Status", "OK"},
+            };
+
+            return true;
+        }
+
+        outResultMessage = {
+            {"Status", "ERROR"},
+        };
+
+        return false;
+    }
+    else
+    {
+        auto optionalQuery = dbTransport->ExecuteQuery("DELETE FROM Friendships "
+                                                       "WHERE id = " + QString::number(requestId));
+
+        if (optionalQuery)
+        {
+            outResultMessage = {
+                {"Status", "OK"},
+            };
+
+            return true;
+        }
+
+        outResultMessage = {
+            {"Status", "ERROR"},
+        };
+
+        return false;
+    }
+}
+
+bool HandleDeleteFriendOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId, friendId;
+
+    MessagingProtocol::AcquireDeleteFriend(userMessage, userId, friendId);
+
+    auto optionalQuery = dbTransport->ExecuteQuery("DELETE FROM Friendships "
+                                                   "WHERE (requester_user_id = " + QString::number(userId) + " AND responder_user_id = " + QString::number(friendId) + ") "
+                                                   "OR (requester_user_id = " + QString::number(friendId) + " AND responder_user_id = " + QString::number(userId) + ")");
+
+    if (optionalQuery)
+    {
+        outResultMessage = {
+            {"Status", "OK"},
+        };
+
+        return true;
+    }
+
+    outResultMessage = {
+        {"Status", "ERROR"},
+    };
+
+    return false;
 }
 
 // -------------------------------------------- DATA PART HANDLERS ---------------------------------------------------//

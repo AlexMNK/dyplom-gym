@@ -28,6 +28,8 @@ public slots:
 private slots:
     void on_backButton_clicked();
 
+    void on_delete_2_clicked();
+
 private:
     QPixmap GetProperRankIcon(int points);
     QString GetProperRankName(int points);

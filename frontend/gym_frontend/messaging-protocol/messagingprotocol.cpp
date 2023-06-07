@@ -344,5 +344,27 @@ void MessagingProtocol::AcquireGetUserFriendRequestsReply(const json& message, s
     }
 }
 
+//
+void MessagingProtocol::BuildReplyFriendRequest(json& outMessage, int requestId, bool status)
+{
+    outMessage =
+    {
+        {"Operation", "ReplyFriendRequest"},
+        {"RequestId", requestId},
+        {"RequestStatus", status},
+    };
+}
+
+//
+void MessagingProtocol::BuildDeleteFriend(json& outMessage, int userId, int friendId)
+{
+    outMessage =
+    {
+        {"Operation", "DeleteFriend"},
+        {"UserId", userId},
+        {"FriendId", friendId},
+    };
+}
+
 
 

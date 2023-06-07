@@ -61,6 +61,7 @@ void MainWindow::SetupUiDesign()
 
     // signals
     connect(ui->friendList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnFriendClicked(QListWidgetItem*)));
+    connect(ui->friendList_2, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnFriendRequestClicked(QListWidgetItem*)));
     connect(ui->postsList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnPostClicked(QListWidgetItem*)));
 
     connect(ui->traningMondayList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnMondayExerciseClicked(QListWidgetItem*)));
@@ -342,6 +343,56 @@ void MainWindow::OnFriendClicked(QListWidgetItem* item)
     mFriendWindow->show();
 }
 
+void MainWindow::OnFriendRequestClicked(QListWidgetItem* item)
+{
+    int index = ui->friendList_2->row(item);
+
+    std::pair<FriendUser*, int> currentRequest = mCurrentUser->GetUserFriendRequests()[index];
+
+    auto reply = QMessageBox::question(this, "Respond to a friend request", "Do you want to add\n" + currentRequest.first->GetUserName() +
+                                       " " + currentRequest.first->GetUserHashtag() + "\n to your friend list?", QMessageBox::Yes|QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+    {
+        json replyFriendRequest;
+        MessagingProtocol::BuildReplyFriendRequest(replyFriendRequest, currentRequest.second, true);
+
+        mClientInstance->SendDataToServer(replyFriendRequest);                                      // SEND friend request status
+
+        const json reply = mClientInstance->ReceiveDataFromServer();                                // RCV status
+
+        if (QString::fromStdString(reply["Status"]) != "OK")
+        {
+            QMessageBox::warning(this, "Failure", "Failed to add a friend!");
+
+            return;
+        }
+
+        QMessageBox::information(this, "Success", "Friend was added successfully!");
+    }
+    else if (reply == QMessageBox::No)
+    {
+        json replyFriendRequest;
+        MessagingProtocol::BuildReplyFriendRequest(replyFriendRequest, currentRequest.second, false);
+
+        mClientInstance->SendDataToServer(replyFriendRequest);                                      // SEND friend request status
+
+        const json reply = mClientInstance->ReceiveDataFromServer();                                // RCV status
+
+        if (QString::fromStdString(reply["Status"]) != "OK")
+        {
+            QMessageBox::warning(this, "Failure", "Failed to reject a friend request!");
+
+            return;
+        }
+
+        QMessageBox::information(this, "Success", "Friend request was rejected successfully!");
+    }
+
+    PerformGetUserFriendsOperation();
+    PerformGetUserFriendRequestsOperation();
+}
+
 void MainWindow::CreateAddPostWindow()
 {
     if (!mIsAddPostWindowCreated)
@@ -455,6 +506,8 @@ void MainWindow::BackToMainWindowFromFriendSlot()
 {
     mFriendWindow->hide();
     mClientInstance->SetCurrentWindow(this);
+
+    PerformGetUserFriendsOperation();
 }
 
 void MainWindow::CreateExerciseWindow()

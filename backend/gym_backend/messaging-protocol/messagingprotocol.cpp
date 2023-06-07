@@ -286,7 +286,7 @@ void MessagingProtocol::AcquireUpdateUserInfo(const json& message, int& outUserI
 }
 
 //
-void MessagingProtocol::AcquirGetUserFriendRequests(const json& message, int& outId)
+void MessagingProtocol::AcquireGetUserFriendRequests(const json& message, int& outId)
 {
     outId = message["UserId"];
 }
@@ -314,3 +314,16 @@ void MessagingProtocol::BuildGetUserFriendRequestsReply(json& outMessage, const 
     };
 }
 
+//
+void MessagingProtocol::AcquireReplyFriendRequest(const json& message, int& outRequestId, bool& outStatus)
+{
+    outRequestId = message["RequestId"];
+    outStatus = message["RequestStatus"];
+}
+
+//
+void MessagingProtocol::AcquireDeleteFriend(const json& message, int& outUserId, int& outFriendId)
+{
+    outUserId = message["UserId"];
+    outFriendId = message["FriendId"];
+}

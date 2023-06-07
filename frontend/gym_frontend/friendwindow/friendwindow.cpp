@@ -93,3 +93,35 @@ void FriendWindow::on_backButton_clicked()
     emit BackToMainWindow();
 }
 
+
+void FriendWindow::on_delete_2_clicked()
+{
+    auto reply = QMessageBox::question(this, "Delete a friend", "Are you sure you want to delete this user from a friend list?", QMessageBox::Yes|QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+    {
+        json deleteFriend;
+        MessagingProtocol::BuildDeleteFriend(deleteFriend, mCurrentUser->GetUserId(), mFriendInstance->GetUserId());
+
+        mClientInstance->SendDataToServer(deleteFriend);                        // SEND delete request
+
+        const json reply = mClientInstance->ReceiveDataFromServer();            // RCV status
+
+        if (QString::fromStdString(reply["Status"]) != "OK")
+        {
+            QMessageBox::warning(this, "Failure", "Failed to delete a user from a friend list!");
+        }
+        else
+        {
+            QMessageBox::information(this, "Success", "User " + mFriendInstance->GetUserName() + " was successfully deleted from a friend list");
+        }
+
+        emit BackToMainWindow();
+    }
+    else
+    {
+        return;
+    }
+}
+
+

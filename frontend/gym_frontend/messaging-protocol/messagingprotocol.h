@@ -96,6 +96,14 @@ public:
     // Get Friend requests by user id
     static void BuildGetUserFriendRequests(json& outMessage, int userId);
     static void AcquireGetUserFriendRequestsReply(const json& message, std::vector<std::pair<int, int>>& outIds);
+
+    // Reply to a friend request
+    static void BuildReplyFriendRequest(json& outMessage, int requestId, bool status);
+    // no reply
+
+    // Delete a friend
+    static void BuildDeleteFriend(json& outMessage, int userId, int friendId);
+    // no reply
 };
 
 #endif // MESSAGINGPROTOCOL_H

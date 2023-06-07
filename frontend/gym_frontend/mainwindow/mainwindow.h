@@ -61,6 +61,7 @@ signals:
 public slots:
     void AuthorizationSuccess(Client* clientInstance, int userId);
     void OnFriendClicked(QListWidgetItem* item);
+    void OnFriendRequestClicked(QListWidgetItem* item);
     void OnPostClicked(QListWidgetItem* item);
     void OnMondayExerciseClicked(QListWidgetItem* item);
     void OnTuesdayExerciseClicked(QListWidgetItem* item);
