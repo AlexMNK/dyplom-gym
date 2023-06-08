@@ -18,6 +18,7 @@
 #include "exercisewindow/exercisewindow.h"
 #include "exercisewindow/addexercise.h"
 #include "postwindow/addpostwindow.h"
+#include "friendwindow/addfriend.h"
 
 #include <QMainWindow>
 
@@ -57,6 +58,7 @@ signals:
     void OpenExerciseWindow(Client* clientInstance, Exercise* exercise);
     void OpenAddExerciseWindow(Client* clientInstance, int userId, QString dayOfTheWeek);
     void OpenAddPostWindow(Client* clientInstance, int userId);
+    void OpenAddFriendWindow(Client* clientInstance);
 
 public slots:
     void AuthorizationSuccess(Client* clientInstance, int userId);
@@ -76,6 +78,7 @@ public slots:
     void BackToMainWindowFromExerciseSlot();
     void BackToMainWindowFromAddExerciseSlot();
     void BackToMainWindowFromAddPostSlot();
+    void BackToMainWindowFromAddFriendSlot();
 
 private slots:
     void on_signOutButton_clicked();
@@ -95,6 +98,8 @@ private slots:
 
     void on_addPostButton_clicked();
 
+    void on_addFriend_clicked();
+
 private: // helpers
     QString GetUsernameByPost(UserPost* post);
     QPixmap GetUserImageByPost(UserPost* post);
@@ -106,6 +111,7 @@ private: // helpers
     void CreateExerciseWindow();
     void CreateAddExerciseWindow();
     void CreateAddPostWindow();
+    void CreateAddFriendWindow();
     void FillPostsList();
     void SetupUiDesign();
     void FillCurentUserDataFields();
@@ -155,6 +161,9 @@ private:
 
     AddPostWindow* mAddPostWindow;
     bool mIsAddPostWindowCreated{false};
+
+    AddFriend* mAddFriendWindow;
+    bool mIsAddFriendWindowCreated{false};
 
     SectionOpened mCurrentSection{Posts};
 

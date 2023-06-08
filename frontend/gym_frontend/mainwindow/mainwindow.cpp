@@ -46,6 +46,11 @@ MainWindow::~MainWindow()
         delete mAddPostWindow;
     }
 
+    if (mIsAddFriendWindowCreated)
+    {
+        delete mAddFriendWindow;
+    }
+
     for (const auto& post : mPosts)
     {
         delete post;
@@ -272,11 +277,17 @@ void MainWindow::on_trainingAddSunday_clicked()
     mAddExerciseWindow->show();
 }
 
-
 void MainWindow::on_addPostButton_clicked()
 {
     CreateAddPostWindow();
     emit OpenAddPostWindow(mClientInstance, mCurrentUser->GetUserId());
     mAddPostWindow->show();
+}
+
+void MainWindow::on_addFriend_clicked()
+{
+    CreateAddFriendWindow();
+    emit OpenAddFriendWindow(mClientInstance);
+    mAddFriendWindow->show();
 }
 

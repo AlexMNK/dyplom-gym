@@ -404,12 +404,29 @@ void MainWindow::CreateAddPostWindow()
     }
 }
 
+void MainWindow::CreateAddFriendWindow()
+{
+    if (!mIsAddFriendWindowCreated)
+    {
+        this->mAddFriendWindow = new AddFriend();
+        connect(this, &MainWindow::OpenAddFriendWindow, mAddFriendWindow, &AddFriend::AddFriendWindowOpened);
+        connect(mAddFriendWindow, SIGNAL(BackToMainWindow()), this, SLOT(BackToMainWindowFromAddFriendSlot()));
+        mIsAddFriendWindowCreated = true;
+    }
+}
+
 void MainWindow::BackToMainWindowFromAddPostSlot()
 {
     mAddPostWindow->hide();
     mClientInstance->SetCurrentWindow(this);
 
     PerformGetPostsOperation();
+}
+
+void MainWindow::BackToMainWindowFromAddFriendSlot()
+{
+    mAddFriendWindow->hide();
+    mClientInstance->SetCurrentWindow(this);
 }
 
 QString MainWindow::GetUsernameByPost(UserPost* post)

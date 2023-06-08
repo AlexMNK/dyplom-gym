@@ -15,6 +15,7 @@ SOURCES += \
     client-logic/client.cpp \
     exercisewindow/addexercise.cpp \
     exercisewindow/exercisewindow.cpp \
+    friendwindow/addfriend.cpp \
     friendwindow/friendwindow.cpp \
     login/loginhelpers.cpp \
     login/loginoperations.cpp \
@@ -37,6 +38,7 @@ HEADERS += \
     client-logic/client.h \
     exercisewindow/addexercise.h \
     exercisewindow/exercisewindow.h \
+    friendwindow/addfriend.h \
     friendwindow/friendwindow.h \
     login/login.h \
     mainwindow/mainwindow.h \
@@ -56,6 +58,7 @@ HEADERS += \
 FORMS += \
     exercisewindow/addexercise.ui \
     exercisewindow/exercisewindow.ui \
+    friendwindow/addfriend.ui \
     friendwindow/friendwindow.ui \
     login/login.ui \
     mainwindow/mainwindow.ui \
