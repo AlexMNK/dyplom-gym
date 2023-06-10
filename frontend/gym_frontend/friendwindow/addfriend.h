@@ -24,7 +24,7 @@ signals:
     void BackToMainWindow();
 
 public slots:
-    void AddFriendWindowOpened(Client* clientInstance);
+    void AddFriendWindowOpened(Client* clientInstance, int userId);
 
 private slots:
     void on_Add_clicked();
@@ -33,6 +33,7 @@ private slots:
 private:
     Ui::AddFriend *ui;
 
+    int mUserId;
     Client* mClientInstance;
 };
 

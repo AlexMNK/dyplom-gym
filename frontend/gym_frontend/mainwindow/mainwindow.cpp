@@ -287,7 +287,7 @@ void MainWindow::on_addPostButton_clicked()
 void MainWindow::on_addFriend_clicked()
 {
     CreateAddFriendWindow();
-    emit OpenAddFriendWindow(mClientInstance);
+    emit OpenAddFriendWindow(mClientInstance, mCurrentUser->GetUserId());
     mAddFriendWindow->show();
 }
 

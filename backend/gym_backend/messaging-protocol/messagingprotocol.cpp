@@ -327,3 +327,11 @@ void MessagingProtocol::AcquireDeleteFriend(const json& message, int& outUserId,
     outUserId = message["UserId"];
     outFriendId = message["FriendId"];
 }
+
+//
+void MessagingProtocol::AcquireAddFriend(const json& message, int& outUserId, QString& outFriendName)
+{
+    outUserId = message["UserId"];
+    outFriendName = QString::fromStdString(message["FriendName"]);
+}
+

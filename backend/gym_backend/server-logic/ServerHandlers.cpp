@@ -29,6 +29,7 @@ static bool HandleSignUpOperation(DBTransport* dbTransport, const json& userMess
 static bool HandleUpdateUserDataOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleReplyFriendRequestOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 static bool HandleDeleteFriendOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
+static bool HandleAddFriendOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage);
 
 static std::map<QString, Handler> messageHandlers =
 {
@@ -49,6 +50,7 @@ static std::map<QString, Handler> messageHandlers =
     {"UpdateUserInfo", &HandleUpdateUserDataOperation},
     {"ReplyFriendRequest", &HandleReplyFriendRequestOperation},
     {"DeleteFriend", &HandleDeleteFriendOperation},
+    {"AddFriend", &HandleAddFriendOperation},
 };
 
 // -- Data part handlers -- //
@@ -949,6 +951,131 @@ bool HandleDeleteFriendOperation(DBTransport* dbTransport, const json& userMessa
     };
 
     return false;
+}
+
+bool HandleAddFriendOperation(DBTransport* dbTransport, const json& userMessage, json& outResultMessage)
+{
+    int userId;
+    QString friendName;
+
+    MessagingProtocol::AcquireAddFriend(userMessage, userId, friendName);
+
+    if (friendName[0] == '@') // logic with hashtags
+    {
+        auto optionalQuery = dbTransport->ExecuteQuery("SELECT id FROM User_Hashtags WHERE hashtag = '" + friendName + "'");
+        if (optionalQuery)
+        {
+            QSqlQuery query(std::move(optionalQuery.value()));
+            QString valueTest;
+            int hashId = 0;
+
+            if (DBHelper::GetNextQueryResultRow(query))
+            {
+                valueTest = DBHelper::GetQueryData(query, 0).toString();
+            }
+
+            if (!valueTest.isEmpty())
+            {
+                hashId = valueTest.toInt();
+            }
+            else
+            {
+                outResultMessage = {
+                    {"Status", "NOUSER"},
+                };
+
+                return true;
+            }
+
+            auto optionalQuery2 = dbTransport->ExecuteQuery("SELECT id FROM Users WHERE user_hashtag = " + QString::number(hashId));
+            if (optionalQuery2)
+            {
+                QSqlQuery query2(std::move(optionalQuery2.value()));
+                int friendId = 0;
+
+                if (DBHelper::GetNextQueryResultRow(query2))
+                {
+                    friendId = DBHelper::GetQueryData(query2, 0).toInt();
+                }
+
+                auto optionalQuery3 = dbTransport->ExecuteQuery("INSERT INTO Friendships "
+                                                                "VALUES (" + QString::number(userId) + ", "
+                                                                + QString::number(friendId) + ", 1, NULL)");
+                if (optionalQuery3)
+                {
+                    outResultMessage = {
+                        {"Status", "OK"},
+                    };
+
+                    return true;
+                }
+
+                outResultMessage = {
+                    {"Status", "ERROR"},
+                };
+
+                return false;
+            }
+        }
+
+        outResultMessage = {
+            {"Status", "ERROR"},
+        };
+
+        return false;
+    }
+    else // logic with User Name
+    {
+        auto optionalQuery2 = dbTransport->ExecuteQuery("SELECT id FROM Users WHERE user_name = '" + friendName + "'");
+        if (optionalQuery2)
+        {
+            QSqlQuery query2(std::move(optionalQuery2.value()));
+            QString valueTest;
+            int friendId = 0;
+
+            if (DBHelper::GetNextQueryResultRow(query2))
+            {
+                valueTest = DBHelper::GetQueryData(query2, 0).toString();
+            }
+
+            if (!valueTest.isEmpty())
+            {
+                friendId = valueTest.toInt();
+            }
+            else
+            {
+                outResultMessage = {
+                    {"Status", "NOUSER"},
+                };
+
+                return true;
+            }
+
+            auto optionalQuery3 = dbTransport->ExecuteQuery("INSERT INTO Friendships "
+                                                            "VALUES (" + QString::number(userId) + ", "
+                                                            + QString::number(friendId) + ", 1, NULL)");
+            if (optionalQuery3)
+            {
+                outResultMessage = {
+                    {"Status", "OK"},
+                };
+
+                return true;
+            }
+
+            outResultMessage = {
+                {"Status", "ERROR"},
+            };
+
+            return false;
+        }
+
+        outResultMessage = {
+            {"Status", "ERROR"},
+        };
+
+        return false;
+    }
 }
 
 // -------------------------------------------- DATA PART HANDLERS ---------------------------------------------------//

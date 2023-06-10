@@ -104,6 +104,10 @@ public:
     // Delete a friend
     static void BuildDeleteFriend(json& outMessage, int userId, int friendId);
     // no reply
+
+    // Send a friend request
+    static void BuildAddFriend(json& outMessage, int userId, const QString& friendName);
+    // no reply
 };
 
 #endif // MESSAGINGPROTOCOL_H

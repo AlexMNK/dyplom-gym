@@ -58,7 +58,7 @@ signals:
     void OpenExerciseWindow(Client* clientInstance, Exercise* exercise);
     void OpenAddExerciseWindow(Client* clientInstance, int userId, QString dayOfTheWeek);
     void OpenAddPostWindow(Client* clientInstance, int userId);
-    void OpenAddFriendWindow(Client* clientInstance);
+    void OpenAddFriendWindow(Client* clientInstance, int userId);
 
 public slots:
     void AuthorizationSuccess(Client* clientInstance, int userId);

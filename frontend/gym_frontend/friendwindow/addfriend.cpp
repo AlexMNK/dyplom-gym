@@ -1,6 +1,8 @@
 #include "addfriend.h"
 #include "ui_addfriend.h"
 
+#include "messaging-protocol/messagingprotocol.h"
+
 #include <QMessageBox>
 
 AddFriend::AddFriend(QWidget *parent) :
@@ -21,9 +23,10 @@ AddFriend::~AddFriend()
     delete ui;
 }
 
-void AddFriend::AddFriendWindowOpened(Client* clientInstance)
+void AddFriend::AddFriendWindowOpened(Client* clientInstance, int userId)
 {
     this->mClientInstance = clientInstance;
+    this->mUserId = userId;
     mClientInstance->SetCurrentWindow(this);
 
     ui->lineEdit->clear();
@@ -31,7 +34,32 @@ void AddFriend::AddFriendWindowOpened(Client* clientInstance)
 
 void AddFriend::on_Add_clicked()
 {
-    QMessageBox::information(this, "Success", "A friend request was sent to " + ui->lineEdit->text());
+    if (ui->lineEdit->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Wrong input", "Enter user name or hashtag!");
+        return;
+    }
+
+    json addFriend;
+    MessagingProtocol::BuildAddFriend(addFriend, mUserId, ui->lineEdit->text());
+
+    mClientInstance->SendDataToServer(addFriend);                           // SEND add request
+
+    const json reply = mClientInstance->ReceiveDataFromServer();            // RCV status
+
+    if (QString::fromStdString(reply["Status"]) == "NOUSER")
+    {
+        QMessageBox::warning(this, "Failure", "Failed to find a user!");
+    }
+    else if (QString::fromStdString(reply["Status"]) == "ERROR")
+    {
+       QMessageBox::warning(this, "Failure", "Failed to send friend request!");
+    }
+    else // OK
+    {
+         QMessageBox::information(this, "Success", "A friend request was sent to " + ui->lineEdit->text());
+    }
+
     emit BackToMainWindow();
 }
 

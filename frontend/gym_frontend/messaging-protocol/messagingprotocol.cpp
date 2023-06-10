@@ -366,5 +366,16 @@ void MessagingProtocol::BuildDeleteFriend(json& outMessage, int userId, int frie
     };
 }
 
+//
+void MessagingProtocol::BuildAddFriend(json& outMessage, int userId, const QString& friendName)
+{
+    outMessage =
+    {
+        {"Operation", "AddFriend"},
+        {"UserId", userId},
+        {"FriendName", friendName.toStdString()},
+    };
+}
+
 
 
